@@ -1,0 +1,152 @@
+
+---
+  output: word_document
+---
+
+
+```{r setwd, include = F}
+rm(list=ls())
+
+#Set working directory up one level
+setwd('..')
+
+#Load and clean data
+source('Scripts/Telomere parentage LOAD.r')
+source('Scripts/Telomere parentage FUNCTIONS.r')
+source('Scripts/Telomere parentage CLEAN.r')
+
+
+#Set some options
+options(na.action='na.fail')
+opts_knit$set(root.dir = getwd())
+opts_chunk$set(echo=FALSE,
+               warning=FALSE,
+               message=FALSE,
+               fig.path='../Figures/',
+               fig.width= 3,
+               fig.height= 6,
+               fig.show='asis',
+               dev='png')
+
+```
+
+**Telomere inheritence in the Seychelles warbler**
+
+
+Have a look at the relationship between maternal and offspring telomere length. It looks like there's no relationship between chick TL and maternal TL, but a positive relationship between fledgling and maternal TL. I found this same result with a much reduced sample size (around 30) - so this is very encouraging in terms of the telomere measurements. I've tried calculating maternal TL as the minimum (i.e. from when the mother is oldest), the maximum (youngest) and the mean. All three show the same thing, but we get the strongest effect if we look at the maximum telomere length from the Mum. (NB - the propoer way to do this is to get the mother's age when telomeres were measured - I will do this, but it'll take a bit more work).
+
+```{r Figure1}
+
+Fig1A <- ggplot(chicks,aes(x = mumTL, y = TL,col=NULL)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Mother TL') +
+          ylab('Chick TL') +
+          theme_classic()
+
+Fig1B <- ggplot(fl,aes(x = mumTL, y = TL,col=NULL)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Mother TL') +
+          ylab('Fledgling TL') +
+          theme_classic()
+
+multiplot(Fig1A,Fig1B)
+
+```
+
+
+PAGEBREAK
+
+Run some models - We get no effect of mother's TL on chick TL
+```{r chick model}
+
+
+summary(lm(TL~mumTL,data = chicks))
+
+
+```
+
+
+PAGEBREAK
+
+But we get a significant relationship between fledgling and mother's telomere length.This suggests to me that there is an environmental link between maternal and offspring quality. THings to explore include mothers lay year, food availability, parents age etc. etc. Also need to add the paternity data, but this is pretty limited at present.
+
+```{r fl model}
+
+
+summary(lm(TL~mumTL,data = fl))
+
+
+```
+
+ggplot(chicks,aes(x = factor(LayYear), y = TL,col=factor(LayYear))) +
+          geom_jitter() +
+          xlab('LayYear') +
+          ylab('Chick TL') +
+          theme_classic()
+
+ggplot(fl,aes(x = factor(LayYear), y = mumTL,col=factor(LayYear))) +
+          geom_jitter() +
+          xlab('Lay year') +
+          ylab('Fledgling TL') +
+          theme_classic()
+          
+          
+anova(lm(TLKB~factor(LayYear),data=chicks))
+anova(lm(TLKB~factor(LayYear),data=fl))          
+
+
+boxplot(TL~Ageclass,data=dd)
+summary(lm(TL~Ageclass,data=dd))
+
+
+
+plot(Lifespan~TL,data=chicks)
+summary(lm(Lifespan~TL,data=subset(fl,Lifespan>0)))
+
+chicks$survived <- ifelse(chicks$Lifespan == 0,'N','Y')
+
+boxplot(TL~survived,data = chicks)
+
+dads <- subset(dads,dadTL<13000)
+
+plot(TL~dadTL,data=dads)
+
+library(lme4)
+
+confint.merMod(lmer(TL~dadTL + (1|father),data=dads))
+
+
+fl2 <- subset(dads,Ageclass == 'FL')
+plot(mumTL~TL,data = fl2)
+
+
+plot(TL~TQspace,data = subset(chicks,Status == 'XF'))
+
+summary(lm(TL~Insect+mumTL,data = chicks))
+summary(lm(TL~Insect+mumTL+EPP,data = fl))
+
+
+plot(TL~Insect,data = fl)
+summary(lm(TL~dadTL,data = subset(dads,Ageclass == 'CH')))
+
+
+
+summary(lm(TL~mumTL,data=ddpar))
+summary(lm(dadTL~mumTL,data=dads))
+
+summary(lm(TL~Insect,data=dd))
+boxplot(TL~Insect,data=dd)
+
+tapply(chicks$TL,list(chicks$EPP,chicks$LayYear),length)
+
+
+plot(cenTL~Insect,data=subset(ddlong,Ageclass == 'CH'))
+summary(lm(cenTL~Insect,data=subset(ddlong,Ageclass == 'FL')))
+
+plot(RemainingLife~TL,data=subset(dd,Ageclass %in% c('FL','SA')))
+summary(lm(RemainingLife~cenTL+Insect,data=subset(ddlong,Ageclass %in% c('FL','SA'))))
+
+
+plot(cenTL~mumTL,data=subset(ddlong,Ageclass == 'CH'))
