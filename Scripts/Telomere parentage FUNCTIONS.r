@@ -142,10 +142,23 @@ se <- function(x) sd(x,na.rm=T)/sqrt(length(x))
 
 # Find telomere function --------------------------------------------------
 
-findTL <- function(x,TLfile = AvgTL)
+findTL <- function(bird,TLfile = ParTL)
 {
-  bird <- paste(x)
-  return(TLfile[names(TLfile) == bird])
+  if(is.na(bird))
+  {
+    return(NA)
+  } else
+  {
+    if(!(bird %in% TLfile$BirdID))
+    {
+      return(NA)
+    } else
+    {
+      {
+        return(TLfile[TLfile$BirdID == bird,'TL'])
+      }
+    }
+  }
 }
 
 
@@ -217,6 +230,25 @@ pganchor <- local({
 
 
 # Plotting functions ------------------------------------------------------
+
+
+
+#Plot theme
+
+theme_lgs <- function(addlegend=FALSE)
+{
+  theme_classic() +
+    theme(axis.text.x = element_text(size = 14), 
+          axis.text.y = element_text(size = 14), 
+          axis.title.y = element_text(size = 16,vjust=0.8),
+          axis.title.x = element_text(size = 16),
+          legend.position = if(addlegend == TRUE) c(0.9,0.9) else "none",
+          legend.title = element_blank(),
+          legend.text = element_text(size = 15))
+}
+
+
+
 
 # Multiple plot function
 #
