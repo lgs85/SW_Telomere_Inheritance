@@ -1,14 +1,29 @@
-
 ---
-  output: word_document
+output:
+  word_document
 ---
+```{r setup, include = F}
 
-
-```{r setwd, include = F}
 rm(list=ls())
 
-#Set working directory up one level
-setwd('..')
+#Load knitr
+library(knitr)
+
+#Set some options
+options(na.action='na.fail')
+opts_knit$set(root.dir = '..')
+opts_chunk$set(echo=FALSE,
+               warning=FALSE,
+               message=FALSE,
+               fig.path='../Figures/',
+               fig.width= 5,
+               fig.height= 4,
+               fig.show='asis',
+               dev=c('png','pdf'))
+
+```
+
+```{r load and clean, include = F}
 
 #Load and clean data
 source('Scripts/Telomere parentage LOAD.r')
@@ -16,39 +31,30 @@ source('Scripts/Telomere parentage FUNCTIONS.r')
 source('Scripts/Telomere parentage CLEAN.r')
 
 
-#Set some options
-options(na.action='na.fail')
-opts_knit$set(root.dir = getwd())
-opts_chunk$set(echo=FALSE,
-               warning=FALSE,
-               message=FALSE,
-               fig.path='../Figures/',
-               fig.width= 3,
-               fig.height= 6,
-               fig.show='asis',
-               dev='png')
-
 ```
+
+
+
 
 **Telomere inheritence in the Seychelles warbler**
 
 
-Have a look at the relationship between maternal and offspring telomere length. It looks like there's no relationship between chick TL and maternal TL, but a positive relationship between fledgling and maternal TL. I found this same result with a much reduced sample size (around 30) - so this is very encouraging in terms of the telomere measurements. I've tried calculating maternal TL as the minimum (i.e. from when the mother is oldest), the maximum (youngest) and the mean. All three show the same thing, but we get the strongest effect if we look at the maximum telomere length from the Mum. (NB - the propoer way to do this is to get the mother's age when telomeres were measured - I will do this, but it'll take a bit more work).
+Have a look at the relationship between Parental and offspring telomere length. 
 
-```{r Figure1}
+```{r Figure1,fig.height = 8}
 
-Fig1A <- ggplot(chicks,aes(x = mumTL, y = TL,col=NULL)) +
+Fig1A <- ggplot(juv,aes(x = mumTL, y = TL,col = mumAgeF)) +
           geom_point() +
           stat_smooth(method=lm) +
           xlab('Mother TL') +
-          ylab('Chick TL') +
+          ylab('Offspring TL') +
           theme_classic()
 
-Fig1B <- ggplot(fl,aes(x = mumTL, y = TL,col=NULL)) +
+Fig1B <- ggplot(juv,aes(x = dadTL, y = TL,col = dadAgeF)) +
           geom_point() +
           stat_smooth(method=lm) +
-          xlab('Mother TL') +
-          ylab('Fledgling TL') +
+          xlab('Father TL') +
+          ylab('Offspring TL') +
           theme_classic()
 
 multiplot(Fig1A,Fig1B)
@@ -56,97 +62,69 @@ multiplot(Fig1A,Fig1B)
 ```
 
 
-PAGEBREAK
+Run some models - In the first table, the same factors as before predict offspring telomere length, but so does maternal telomere length. In the second table nothing is significant. This could be collinearity, or it could be crappy sample size. Need to check.
 
-Run some models - We get no effect of mother's TL on chick TL
-```{r chick model}
+```{r model}
 
 
-summary(lm(TL~mumTL,data = chicks))
+lm1 <- lm(TL~mumTL+mumage+Ageclass+Sex,data = juv)
+summary(lm1)$coefficients
+
+
+
+lm2 <- lm(TL~dadTL+dadage+Ageclass+Sex,data = juv,na.action=na.exclude)
+summary(lm2)$coefficients
+
 
 
 ```
 
 
-PAGEBREAK
-
-But we get a significant relationship between fledgling and mother's telomere length.This suggests to me that there is an environmental link between maternal and offspring quality. THings to explore include mothers lay year, food availability, parents age etc. etc. Also need to add the paternity data, but this is pretty limited at present.
-
-```{r fl model}
 
 
-summary(lm(TL~mumTL,data = fl))
+Second, telomere length in both male and female parents is negatively related to the proportion of male offspring. So, mums and dads with longer telomeres have more female chicks.
+
+```{r Figure 3,fig.width=5,fig.height=8}
+juv$SexBin <- ifelse(juv$Sex == 'Females',0,1)
+
+juv2 <- subset(juv,EPP == 'Within pair')
+
+Fig3A <- ggplot(juv2,aes(x = mumTL,y = SexBin,col=Ageclass)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=F) +
+  xlab('Maternal TL') +
+  ylab('Proportion male offspring')
+
+
+Fig3B <- ggplot(juv,aes(x = dadTL,y = SexBin,col=Ageclass)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=F) +
+  xlab('Paternal TL') +
+  ylab('Proportion male offspring')
+
+
+
+multiplot(Fig3A,Fig3B)
 
 
 ```
 
-ggplot(chicks,aes(x = factor(LayYear), y = TL,col=factor(LayYear))) +
-          geom_jitter() +
-          xlab('LayYear') +
-          ylab('Chick TL') +
-          theme_classic()
-
-ggplot(fl,aes(x = factor(LayYear), y = mumTL,col=factor(LayYear))) +
-          geom_jitter() +
-          xlab('Lay year') +
-          ylab('Fledgling TL') +
-          theme_classic()
-          
-          
-anova(lm(TLKB~factor(LayYear),data=chicks))
-anova(lm(TLKB~factor(LayYear),data=fl))          
-
-
-boxplot(TL~Ageclass,data=dd)
-summary(lm(TL~Ageclass,data=dd))
 
 
 
-plot(Lifespan~TL,data=chicks)
-summary(lm(Lifespan~TL,data=subset(fl,Lifespan>0)))
-
-chicks$survived <- ifelse(chicks$Lifespan == 0,'N','Y')
-
-boxplot(TL~survived,data = chicks)
-
-dads <- subset(dads,dadTL<13000)
-
-plot(TL~dadTL,data=dads)
-
-library(lme4)
-
-confint.merMod(lmer(TL~dadTL + (1|father),data=dads))
+Run some models - we get significant effects for paternal age, paternal TL, and maternal TL, but not maternal age
+```{r models 2}
+lm2 <- glmer(SexBin~Ageclass+dadTL*dadage+(mother|TerritoryID)+(father|TerritoryID),data=juv,family='binomial',na.action=na.exclude)
+summary(lm2)
 
 
-fl2 <- subset(dads,Ageclass == 'FL')
-plot(mumTL~TL,data = fl2)
+lm2 <- glmer(SexBin~mumTL*mumage +(mother|TerritoryID) + (father|TerritoryID),data=juv,family='binomial',na.action=na.exclude)
+summary(lm2)
 
 
-plot(TL~TQspace,data = subset(chicks,Status == 'XF'))
-
-summary(lm(TL~Insect+mumTL,data = chicks))
-summary(lm(TL~Insect+mumTL+EPP,data = fl))
-
-
-plot(TL~Insect,data = fl)
-summary(lm(TL~dadTL,data = subset(dads,Ageclass == 'CH')))
+```
 
 
 
-summary(lm(TL~mumTL,data=ddpar))
-summary(lm(dadTL~mumTL,data=dads))
 
-summary(lm(TL~Insect,data=dd))
-boxplot(TL~Insect,data=dd)
-
-tapply(chicks$TL,list(chicks$EPP,chicks$LayYear),length)
-
-
-plot(cenTL~Insect,data=subset(ddlong,Ageclass == 'CH'))
-summary(lm(cenTL~Insect,data=subset(ddlong,Ageclass == 'FL')))
-
-plot(RemainingLife~TL,data=subset(dd,Ageclass %in% c('FL','SA')))
-summary(lm(RemainingLife~cenTL+Insect,data=subset(ddlong,Ageclass %in% c('FL','SA'))))
-
-
-plot(cenTL~mumTL,data=subset(ddlong,Ageclass == 'CH'))
+So is it that that males are 
