@@ -122,6 +122,36 @@ dd$Sex <- ifelse(dd$SexEstimate == 1,'Males','Females')
 
 
 
+# TQ and insects ----------------------------------------------------------
+
+
+terr <- terr[complete.cases(terr),] #Get rid of blank rows
+
+
+insects <- subset(insects,FieldPeriodID != 26)
+insects$Insectcen <- (insects$MeanInsects-mean(insects$MeanInsects))/sd(insects$MeanInsects)
+
+# take average for year
+terrmean <- tapply(terr$TQcorrected,terr$TerritoryID,mean)
+
+dd$TQ <- NA
+dd$Insect <- NA
+
+for(i in 1:nrow(dd))
+{
+  if(dd$TerritoryID[i] %in% names(terrmean))
+  {
+    dd$TQ[i] <- terrmean[names(terrmean) == dd$TerritoryID[i]]
+  }
+  
+  if(dd$FieldPeriodID[i] %in% insects$FieldPeriodID)
+  {
+    dd$Insect[i] <- insects$Insectcen[insects$FieldPeriodID == dd$FieldPeriodID[i]] 
+  } 
+}
+
+
+
 
 # Parentage ---------------------------------------------------------------
 

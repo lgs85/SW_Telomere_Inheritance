@@ -79,21 +79,41 @@ Run some models - In the first table, the same factors as before predict offspri
 
 ```{r model}
 
-lm2 <- lmer(TL~EmumTL + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
+
+sr2 <- rep(NA,nrow(sr))
+for(i in 1:nrow(sr)) sr2[i] <- sr[i,2]/sum(sr[i,])
+
+plot(sr2~insect)
+
+apply(sr,1,binom.test)
+
+lm2 <- lmer(TL~ LmumTL + LdadTL + TQ + Ageclass + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
 lm2 <- standardize(lm2)
 summary(lm2)
 
-lm2 <- lmer(TL~EdadTL + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
+lm2 <- lmer(TL~Ageclass + EdadTL + TQ  + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
 lm2 <- standardize(lm2)
 summary(lm2)
 
-lm2 <- lmer(TL~LmumTL + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
-lm2 <- standardize(lm2)
-summary(lm2)
 
-lm2 <- lmer(TL~LdadTL + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
-lm2 <- standardize(lm2)
-summary(lm2)
+tapply(juv$SurvivedNext,list(juv$Sex,juv$Ageclass),mean)
+tapply(juv$SurvivedNext,list(juv$Sex,juv$Ageclass),length)
+
+
+boxplot(EmumTL~Ageclass,data=subset(juv,!(is.na(juv$EmumTL))))
+boxplot(EdadTL~Ageclass,data=subset(juv,!(is.na(juv$EdadTL))))
+
+
+insect <- tapply(dd$TL,dd$LayYear,mean,na.rm=T)
+insect <- insect[!(is.nan(insect))]
+sr <- tapply(dd$SexEstimate,dd$LayYear,mean)
+n <- tapply(dd$SexEstimate,dd$LayYear,length)
+sr <- sr[n>15]
+sr <- sr[complete.cases(sr)]
+sr <- sr[names(sr) %in% names(insect)]
+insect <- insect[names(insect) %in% names(sr)]
+
+plot(sr~insect)
 
 ```
 
@@ -144,7 +164,7 @@ Check to see whether this is an age effect.
 
 ```{r Figure 3,fig.width=8,fig.height=8}
 
-Fig3A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = mumlife,y = SexEstimate)) +
+Fig3A <- ggplot(juv,aes(x = mumlife,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal Lifespan') +
@@ -159,7 +179,7 @@ Fig3B <- ggplot(juv,aes(x = dadlife,y = SexEstimate)) +
   ylab('Proportion male offspring') +
   theme_lgs()
 
-Fig3C <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = mumage,y = SexEstimate)) +
+Fig3C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal age at birth') +
@@ -190,7 +210,7 @@ lm1 <- glmer(SexEstimate~EdadTL + (1|father)+ (1|mother),data=juv,family='binomi
 lm1<- standardize(lm1)
 summary(lm1)
 
-lm2 <- glmer(SexEstimate~LdadTL + (1|father)+ (1|mother),data=juv,family='binomial',na.action=na.exclude)
+lm2 <- glmer(SexEstimate~LmumTL + (1|father)+ (1|mother),data=juv,family='binomial',na.action=na.exclude)
 lm2 <- standardize(lm2)
 summary(lm2)
 
@@ -223,8 +243,6 @@ anova(lm1,lm2)
 
 
 
-
-head(ddpar)
 
 
 
