@@ -125,6 +125,12 @@ dd$Sex <- ifelse(dd$SexEstimate == 1,'Males','Females')
 
 # Parentage ---------------------------------------------------------------
 
+
+pars$MumAge <- with(pars,LayYear-MumLayYear)
+pars$DadAge <- with(pars,LayYear-DadLayYear)
+
+
+
 #Get parents
 ddpar <- subset(dd,BirdID %in% pars$offspring)
 ddpar$mother <- unlist(lapply(ddpar$BirdID,findpar))
@@ -159,13 +165,11 @@ for(i in 1:nrow(ddpar))
   ddpar$dadlife[i] <- daddata$Lifespan
 }
 
-
-
-
 # Subset juveniles --------------------------------------------------------------
 
 
-juv <- droplevels(subset(ddpar,Ageclass %in% c('CH','FL','OFL','SA')))
+#juv <- droplevels(subset(ddpar,Ageclass %in% c('CH','FL','OFL','SA')))
+juv <- subset(ddpar,Age<2)
 adults <- droplevels(subset(dd,Ageclass == 'A'))
 
 mymed <- mean(juv$cenTL,na.rm=T)
@@ -191,36 +195,73 @@ juv$father <- factor(juv$father)
 
 
 ######################################################
-ddpar2 <- dd
-allpars <- c(pars$mother,pars$father)
-allpars <- unique(allpars[!(is.na(allpars))])
+pars <- pars[order(pars$mother),]
+pars$MumOffOrd[1] <- 1
 
+x = 1
 
-ddpar2 <- subset(dd,BirdID %in% allpars)
-ddpar2$numoffspring <- NA
-
-for(i in 1:nrow(ddpar2))
+for(i in 2:nrow(pars))
 {
-  if(ddpar2$Sex[i] == 'Males')
+  if(pars$mother[i] == pars$mother[i-1])
   {
-  currentdata <- subset(pars,father == ddpar2$BirdID[i])
-  ddpar2$numoffspring[i] <- nrow(currentdata)
+    x = x + 1
   } else
   {
-    if(ddpar2$Sex[i] == 'Females')
-    {
-      currentdata <- subset(pars,mother == ddpar2$BirdID[i])
-      ddpar2$numoffspring[i] <- nrow(currentdata)
-    }
+    x = 1
   }
-  ddpar2$offpropmale[i] <- mean(currentdata$SexEstimate)
+  
+  pars$MumOffOrd[i] <- x
   
 }
 
-ddpar2 <- ddpar2[order(ddpar2$BirdID,ddpar2$CatchDate),]
-ddpar2 <- ddpar2[!(duplicated(ddpar2$BirdID)),]
-ddpar2$nmales <- with(ddpar2,offpropmale*numoffspring)
-ddpar2$nfemales <- with(ddpar2,numoffspring-nmales)
-ddpar2$sexratio <- with(ddpar2,log((nmales+1)/(nfemales+1)))
 
-ddpar2$sexbias <- with(ddpar2,(nmales-nfemales)*numoffspring)
+
+pars <- pars[order(pars$father,pars$DadAge),]
+pars$DadOffOrd <- NA
+pars$Numoffspring <- NA
+pars$DadOffOrd[1] <- 1
+
+x = 1
+
+for(i in 2:nrow(pars))
+{
+  if(is.na(pars$father[i])) break
+  if(pars$father[i] == pars$father[i-1])
+  {
+    x = x + 1
+  } else
+  {
+    pars$Numoffspring[pars$father == pars$father[i-1]] <- x
+    x = 1
+  }
+  
+  pars$DadOffOrd[i] <- x
+  
+}
+
+cummean <- function(x) cumsum(x)/seq_along(x)
+
+pars$CumSex <- unlist(tapply(pars$SexEstimate,pars$father,cummean))
+
+pars2 <- subset(pars,Numoffspring >6)
+
+ggplot(pars2,aes(x = DadAge,y = SexEstimate,col=factor(father))) +
+  geom_line()+
+  theme_lgs()+
+  stat_sum(geom='line')
+
+
+myn <- tapply(pars$SexEstimate,pars$MumAge,length)
+myn2 <- tapply(pars$SexEstimate,pars$DadAge,length)
+mymean <- tapply(pars$SexEstimate,pars$MumAge,mean,na.rm=T)
+mymean2 <- tapply(pars$SexEstimate,pars$DadAge,mean,na.rm=T)
+
+
+mymean <- mymean[myn>5]
+mymean2 <- mymean2[myn2>5]
+
+plot(mymean,type='l',ylim = c(0,1))
+points(mymean2,col='red',type='l')
+abline(0.5,0,lty=2)
+
+subset(pars,DadAge == 11)
