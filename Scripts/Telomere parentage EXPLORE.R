@@ -25,10 +25,13 @@ juv$LogLmumTL <- log10(juv$LmumTL)
 juv$LogLdadTL <- log10(juv$LdadTL)
 
 #Run again
-lm_juvTL_LparTL <- lmer(LogTL ~ LogLmumTL * Ageclass +
-                        (LogLmumTL|mother),
+lm_juvTL_LparTL <- lmer(LogTL ~ LogLmumTL + Sex +
+                        (1|mother),
                         data=juv,
-                        na.action=na.exclude)
+                        na.action=na.exclude,REML=F)
 
-standardize(lm_juvTL_LparTL)
+lm_juvTL_LparTL<- standardize(lm_juvTL_LparTL)
 summary(lm_juvTL_LparTL)
+
+
+confint.merMod(lm_juvTL_LparTL)

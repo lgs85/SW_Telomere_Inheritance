@@ -126,13 +126,18 @@ dd$Sex <- ifelse(dd$SexEstimate == 1,'Males','Females')
 
 
 terr <- terr[complete.cases(terr),] #Get rid of blank rows
-
+terr$cenTQ <- NA
+for(i in 1:nrow(terr))
+{
+  currentTQ <- subset(terr,FieldPeriodID == terr$FieldPeriodID[i])$TQcorrected
+  terr$cenTQ[i] <- (terr$TQcorrected[i] - mean(currentTQ))/sd(currentTQ)
+}
 
 insects <- subset(insects,FieldPeriodID != 26)
 insects$Insectcen <- (insects$MeanInsects-mean(insects$MeanInsects))/sd(insects$MeanInsects)
 
 # take average for year
-terrmean <- tapply(terr$TQcorrected,terr$TerritoryID,mean)
+terrmean <- tapply(terr$cenTQ,terr$TerritoryID,mean)
 
 dd$TQ <- NA
 dd$Insect <- NA
@@ -199,7 +204,7 @@ for(i in 1:nrow(ddpar))
 
 
 #juv <- droplevels(subset(ddpar,Ageclass %in% c('CH','FL','OFL','SA')))
-juv <- subset(ddpar,Age<2)
+juv <- subset(ddpar,Age<1)
 adults <- droplevels(subset(dd,Ageclass == 'A'))
 
 mymed <- mean(juv$cenTL,na.rm=T)
@@ -219,6 +224,17 @@ juv$mumAgeF <- ifelse(juv$mumage>mymed,'Old','Young')
 xf <- subset(juv,Status == 'XF')
 juv <- subset(juv,Status!='XF')
 
-juv$mother <- factor(juv$mother)
-juv$father <- factor(juv$father)
 
+# Helpers and social group size -------------------------------------------
+
+status <- subset(status,BreedGroupID %in% juv$BreedGroupID)
+
+for(i in 1:nrow(juv))
+{
+  currentBG <- juv$BreedGroupID[i]
+  currentdata <- subset(subset(status,BreedGroupID == currentBG),BirdID !=juv$BirdID[i])
+  juv$GroupSize[i] <- nrow(currentdata)
+  juv$Helper[i] <- nrow(subset(currentdata,Status == 'H'))
+  juv$OtherJuvs[i] <- nrow(subset(currentdata,Status %in% c('CH','FL','OFL')))
+  juv$NonHelper[i] <- nrow(subset(currentdata,Status %in% c('AB','ABX')))
+}

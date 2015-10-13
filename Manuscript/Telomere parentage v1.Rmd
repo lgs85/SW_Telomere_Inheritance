@@ -1,7 +1,12 @@
 ---
 output:
-  word_document
+  word_document:
+    reference_docx: myref.docx
+bibliography: MyBib.bib
+csl: Evolution.csl
+
 ---
+
 ```{r setup, include = F}
 
 rm(list=ls())
@@ -36,274 +41,51 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 
 
-**Telomere inheritance in the Seychelles warbler**
+**Adaptive sex ratio allocation is linked to maternal telomere length in the Seychelles warbler**
 
+Lewis G. Spurgin^a,b^, Hannah, L. Dugdale^c,d^, Martijn Hammers, Kat Bebbington^a^, Eleanor A. Fairfield^a^, Jan Komdeur^c^, Terry Burke^d^  and David S. Richardson^a,e,^.
 
-Have a look at the relationship between Parental and offspring telomere length. 
+a. School of Biological Sciences, University of East Anglia, Norwich Research Park, NR4 7TJ, United Kingdom
+b. Department of Zoology, Edward Grey Institute, University of Oxford, Oxford, UK
+c. Groningen Institute for Evolutionary Life Sciences, University of Groningen, Groningen, The Netherlands
+d. Department of Animal and Plant Sciences, NERC Biomolecular Analysis Facility, University of Sheffield, Sheffield, UK
+e. Nature Seychelles, Roche Caiman, Mahé, Republic of Seychelles
 
-```{r Figure1,fig.height = 8}
+**Correspondence:** Lewis Spurgin: lewisspurgin@gmail.com; David Richardson: david.richardson@uea.ac.uk
 
-Fig1A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = EmumTL, y = TL)) +
-          geom_point() +
-          stat_smooth(method=lm) +
-          xlab('Mother juvenile TL') +
-          ylab('Offspring TL') +
-          theme_lgs()
 
-Fig1B <- ggplot(juv,aes(x = EdadTL, y = TL)) +
-          geom_point() +
-          stat_smooth(method=lm) +
-          xlab('Father juvenile TL') +
-          ylab('Offspring TL') +
-          theme_lgs()
-Fig1C <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
-          geom_point() +
-          stat_smooth(method=lm) +
-          xlab('Mother adult TL') +
-          ylab('Offspring TL') +
-          theme_lgs()
+**Abstract**
 
-Fig1D <- ggplot(juv,aes(x = LdadTL, y = TL)) +
-          geom_point() +
-          stat_smooth(method=lm) +
-          xlab('Father adult TL') +
-          ylab('Offspring TL') +
-          theme_lgs()
 
-multiplot(Fig1A,Fig1B,Fig1C,Fig1D,layout=matrix(1:4,2,2))
+**Introduction**
 
-```
+The Seychelles warbler (*Acrocephalus sechellensis*) constitutes a textbook example of adaptive sex ratio modification [@Komdeur1996; @Komdeur1997]. The Seychelles warbler is a facultative cooperative breeder - in good environmental conditions, daughters often remain on their natal territory to help rear their siblings.  Komdeur *et al.* [-@Komdeur1997] showed that 
 
+In this study we combine telomere data with the long-term Seychelles warbler data set to test the hypothesis parental condition is related to offspring sex ratio. Specifically, we test the hypothesis that mothers and fathers with longer telomerers produce more females.
 
 
 
-```{r Figure1A,fig.height = 8}
+**Methods**
 
-Fig1A <- ggplot(juv,aes(x = mumage, y = TL,col=Sex)) +
-          geom_point() +
-          stat_smooth(method=lm) +
-          xlab('Mother age at hatching') +
-          ylab('Offspring TL') +
-          theme_lgs()
+*Study species and sampling*
 
-Fig1B <- ggplot(juv,aes(x = dadage, y = TL,col=Sex)) +
-          geom_point() +
-          stat_smooth(method=lm) +
-          xlab('Father age at hatching') +
-          ylab('Offspring TL') +
-          theme_lgs()
-Fig1C <- ggplot(juv,aes(x = mumlife, y = TL,col=Sex)) +
-          geom_point() +
-          stat_smooth(method=lm) +
-          xlab('Mother lifespan') +
-          ylab('Offspring TL') +
-          theme_lgs()
+*Molecular methods*
 
-Fig1D <- ggplot(juv,aes(x = dadage, y = TL,col=Sex)) +
-          geom_point() +
-          stat_smooth(method=lm) +
-          xlab('Father lifespan') +
-          ylab('Offspring TL') +
-          theme_lgs()
+*Statistical analyses*
+We used linear mixed effects models (LMMs) to test for a relationship between parental and juvenile TL. Juvenile TL was entered as the response variable, age class as a fixed factor, and as covariates we included maternal and paternal TL, seasonal food availability, territory quality and the number of helpers present in the natal territory. As our dataset spanned many breeding seasons, and contained multiple juveniles from the same parents, we included an index of the breeding season, maternal ID and paternal ID as random factors. In order to differentiate between parental quality and parental condition, we partitioned parental TL into 'juvenile parental TL' and 'adult parental TL'. Juvenile TL is related to later-life survival, and is thus a biomarker of individual quality, whereas adult TL is expected to reflect the stresses encountered over their adult life, and is thus a marker of condition. Because juvenile and adult parental TL are correlated, we ran separate models for these two variables, keep all other variables the same.
 
-multiplot(Fig1A,Fig1B,Fig1C,Fig1D,layout=matrix(1:4,2,2))
+We then separately tested whether parental age was related to offspring TL, again using LMMs. These were constructed as above, but with parental age and parental lifespan added as covriates in place of parental (adult and juvenile) TL. We chose to run these models separately from the models including parental TL due to collinearity issues between telomere length and age [@Barrett2012]. We compared models containing parental TL to those containing parental age using AIC values and likelihood ratio tests.
 
-```
+Finally, we used generalized linear mixed effects models (GLMMs) with a binomial error structure to test how parental telomere length is related to offspring sex ratio. These models were constructed exactly as the LMMs above, but with offspring sex as the response variable.
 
 
+**Results**
+Juvenile TL and parental TL
 
+Juvenile TL and parental age
 
+Sex ratio and parental TL
 
+Sex ratio and parental age.
 
-
-
-
-
-Run some models - In the first table, the same factors as before predict offspring telomere length, but so does maternal telomere length. In the second table nothing is significant. This could be collinearity, or it could be crappy sample size. Need to check.
-
-```{r model}
-
-
-lm2 <- lmer(TL~ dadage  + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
-lm2 <- standardize(lm2)
-summary(lm2)
-
-lm2 <- lmer(TL~ LmumTL + LdadTL + TQ + Ageclass + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
-lm2 <- standardize(lm2)
-summary(lm2)
-
-lm2 <- lmer(TL~Ageclass + EdadTL + TQ  + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
-lm2 <- standardize(lm2)
-summary(lm2)
-
-
-tapply(juv$SurvivedNext,list(juv$Sex,juv$Ageclass),mean)
-tapply(juv$SurvivedNext,list(juv$Sex,juv$Ageclass),length)
-
-
-boxplot(EmumTL~Ageclass,data=subset(juv,!(is.na(juv$EmumTL))))
-boxplot(EdadTL~Ageclass,data=subset(juv,!(is.na(juv$EdadTL))))
-
-
-insect <- tapply(dd$TL,dd$LayYear,mean,na.rm=T)
-insect <- insect[!(is.nan(insect))]
-sr <- tapply(dd$SexEstimate,dd$LayYear,mean)
-n <- tapply(dd$SexEstimate,dd$LayYear,length)
-sr <- sr[n>15]
-sr <- sr[complete.cases(sr)]
-sr <- sr[names(sr) %in% names(insect)]
-insect <- insect[names(insect) %in% names(sr)]
-
-plot(sr~insect)
-
-```
-
-
-
-
-Have a look at the effect of parental telomere length on offspring sex. We find that parental telomere length in the adult stage is associated with more females. However, parental telomer length in early life is has no effect on offspring sex.
-
-```{r Figure 2,fig.width=8,fig.height=8}
-
-Fig2A <- ggplot(juv,aes(x = EmumTL,y = SexEstimate)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Maternal juvenile TL') +
-  ylab('Proportion male offspring') +
-  theme_lgs() +
-  geom_abline(slope = 0,intercept = 0.5,lty=2)
-
-
-Fig2B <- ggplot(juv,aes(x = EdadTL,y = SexEstimate)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Paternal juvenile TL') +
-  ylab('Proportion male offspring') +
-  theme_lgs() +
-  geom_abline(slope = 0,intercept = 0.5,lty=2)
-
-
-Fig2C <- ggplot(juv,aes(x = LmumTL,y = SexEstimate)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Maternal adult TL') +
-  ylab('Proportion male offspring') +
-  theme_lgs(addlegend = T) +
-  geom_abline(slope = 0,intercept = 0.5,lty=2)
-
-
-
-Fig2D <- ggplot(juv,aes(x = LdadTL,y = SexEstimate)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Paternal adult TL') +
-  ylab('Proportion male offspring') +
-  theme_lgs() +
-  geom_abline(slope = 0,intercept = 0.5,lty=2)
-
-
-multiplot(Fig2A,Fig2B,Fig2C,Fig2D,layout=matrix(1:4,2,2))
-
-
-```
-
-
-Check to see whether this is an age effect.
-
-```{r Figure 3,fig.width=8,fig.height=8}
-
-Fig3A <- ggplot(juv,aes(x = mumlife,y = SexEstimate)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Maternal Lifespan') +
-  ylab('Proportion male offspring') +
-  theme_lgs() +
-  geom_abline(slope = 0,intercept = 0.5,lty=2)
-
-
-
-Fig3B <- ggplot(juv,aes(x = dadlife,y = SexEstimate)) +
-  geom_point() +
-  stat_sum() +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Paternal Lifespan') +
-  ylab('Proportion male offspring') +
-  theme_lgs() +
-  geom_abline(slope = 0,intercept = 0.5,lty=2)
-
-
-Fig3C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  stat_sum() +
-  xlab('Maternal age at hatching') +
-  ylab('Proportion male offspring') +
-  theme_lgs() +
-  geom_abline(slope = 0,intercept = 0.5,lty=2)
-
-
-
-Fig3D <- ggplot(juv,aes(x = dadage,y = SexEstimate)) +
-  geom_point() +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  stat_sum() +
-  xlab('Paternal age at hatching') +
-  ylab('Proportion male offspring') +
-  theme_lgs() +
-  geom_abline(slope = 0,intercept = 0.5,lty=2)
-
-
-multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2))
-
-
-```
-
-
-
-
-
-Run some models - we get significant effects for paternal age, paternal TL, and maternal TL, but not maternal age
-```{r models 2}
-
-lm1 <- glmer(SexEstimate~EdadTL + (1|father)+ (1|mother),data=juv,family='binomial',na.action=na.exclude)
-lm1<- standardize(lm1)
-summary(lm1)
-
-lm2 <- glmer(SexEstimate~LmumTL + (1|father)+ (1|mother),data=juv,family='binomial',na.action=na.exclude)
-lm2 <- standardize(lm2)
-summary(lm2)
-
-anova(lm1,lm2)
-
-
-
-
-lm1 <- glmer(SexEstimate~mumlife + (1|mother) + (1|father)
-             ,data=juv,family='binomial',na.action=na.exclude)
-lm1 <- standardize(lm1)
-summary(lm1)
-
-
-lm2 <- glmer(SexEstimate~mumage + (1|mother) + (1|father)
-             ,data=juv,family='binomial',na.action=na.exclude)
-lm2 <- standardize(lm2)
-summary(lm2)
-
-anova(lm1,lm2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
+**Discussion**

@@ -1,0 +1,224 @@
+---
+output:
+  word_document
+---
+
+```{r setup, include = F}
+
+rm(list=ls())
+
+#Load knitr
+library(knitr)
+
+#Set some options
+options(na.action='na.fail')
+opts_knit$set(root.dir = '..')
+opts_chunk$set(echo=FALSE,
+               warning=FALSE,
+               message=FALSE,
+               fig.path='../Figures/',
+               fig.width= 5,
+               fig.height= 4,
+               fig.show='asis',
+               dev=c('png','pdf'))
+
+```
+
+```{r load and clean, include = F}
+
+#Load and clean data
+source('Scripts/Telomere parentage LOAD.r')
+source('Scripts/Telomere parentage FUNCTIONS.r')
+source('Scripts/Telomere parentage CLEAN.r')
+
+
+```
+
+
+**Tables and Figures**
+
+**Figure 1** Relationship between parental and offspring telomere length in the Seychelles warbler.
+
+**Figure 2** Relationship between and parental age and offspring telomere length in the Seychelles warbler
+
+**Figure 3** Parental telomere length and offspring sex ratio in the Seychelles warbler.
+
+**Figure 4** Parental age and offspring sex ratio in the Seychelles warbler.
+
+
+
+
+```{r Figure1,fig.height = 8}
+
+Fig1A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = EmumTL, y = TL)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Mother juvenile TL') +
+          ylab('Offspring TL') +
+          theme_lgs()
+
+Fig1B <- ggplot(juv,aes(x = EdadTL, y = TL)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Father juvenile TL') +
+          ylab('Offspring TL') +
+          theme_lgs()
+Fig1C <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Mother adult TL') +
+          ylab('Offspring TL') +
+          theme_lgs()
+
+Fig1D <- ggplot(juv,aes(x = LdadTL, y = TL)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Father adult TL') +
+          ylab('Offspring TL') +
+          theme_lgs()
+
+multiplot(Fig1A,Fig1B,Fig1C,Fig1D,layout=matrix(1:4,2,2))
+
+```
+
+
+
+**Figure 2**
+```{r Figure2,fig.height = 8}
+
+Fig2A <- ggplot(juv,aes(x = mumage, y = TL,col=Sex)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Mother age at hatching') +
+          ylab('Offspring TL') +
+          theme_lgs()
+
+Fig2B <- ggplot(juv,aes(x = dadage, y = TL,col=Sex)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Father age at hatching') +
+          ylab('Offspring TL') +
+          theme_lgs()
+Fig2C <- ggplot(juv,aes(x = mumlife, y = TL,col=Sex)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Mother lifespan') +
+          ylab('Offspring TL') +
+          theme_lgs()
+
+Fig2D <- ggplot(juv,aes(x = dadage, y = TL,col=Sex)) +
+          geom_point() +
+          stat_smooth(method=lm) +
+          xlab('Father lifespan') +
+          ylab('Offspring TL') +
+          theme_lgs()
+
+multiplot(Fig2A,Fig2B,Fig2C,Fig2D,layout=matrix(1:4,2,2))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+**Figure 3**
+```{r Figure 3,fig.width=8,fig.height=8}
+
+Fig3A <- ggplot(juv,aes(x = EmumTL,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Maternal juvenile TL') +
+  ylab('Proportion male offspring') +
+  theme_lgs() +
+  geom_abline(slope = 0,intercept = 0.5,lty=2)
+
+
+Fig3B <- ggplot(juv,aes(x = EdadTL,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Paternal juvenile TL') +
+  ylab('Proportion male offspring') +
+  theme_lgs() +
+  geom_abline(slope = 0,intercept = 0.5,lty=2)
+
+
+Fig3C <- ggplot(juv,aes(x = LmumTL,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Maternal adult TL') +
+  ylab('Proportion male offspring') +
+  theme_lgs(addlegend = T) +
+  geom_abline(slope = 0,intercept = 0.5,lty=2)
+
+
+
+Fig3D <- ggplot(juv,aes(x = LdadTL,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Paternal adult TL') +
+  ylab('Proportion male offspring') +
+  theme_lgs() +
+  geom_abline(slope = 0,intercept = 0.5,lty=2)
+
+
+multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2))
+
+
+```
+
+
+**Figure 4**
+```{r Figure 4,fig.width=8,fig.height=8}
+
+Fig3A <- ggplot(juv,aes(x = mumlife,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Maternal Lifespan') +
+  ylab('Proportion male offspring') +
+  theme_lgs() +
+  geom_abline(slope = 0,intercept = 0.5,lty=2)
+
+
+
+Fig3B <- ggplot(juv,aes(x = dadlife,y = SexEstimate)) +
+  geom_point() +
+  stat_sum() +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Paternal Lifespan') +
+  ylab('Proportion male offspring') +
+  theme_lgs() +
+  geom_abline(slope = 0,intercept = 0.5,lty=2)
+
+
+Fig3C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  stat_sum() +
+  xlab('Maternal age at hatching') +
+  ylab('Proportion male offspring') +
+  theme_lgs() +
+  geom_abline(slope = 0,intercept = 0.5,lty=2)
+
+
+
+Fig3D <- ggplot(juv,aes(x = dadage,y = SexEstimate)) +
+  geom_point() +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  stat_sum() +
+  xlab('Paternal age at hatching') +
+  ylab('Proportion male offspring') +
+  theme_lgs() +
+  geom_abline(slope = 0,intercept = 0.5,lty=2)
+
+
+multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2))
+
+
+```
