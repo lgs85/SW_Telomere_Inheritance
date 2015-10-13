@@ -123,21 +123,47 @@ Run some models - In the first table, the same factors as before predict offspri
 
 ```{r model}
 
-lm2 <- lmer(TL~EmumTL + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
-lm2 <- standardize(lm2)
-summary(lm2)
 
+<<<<<<< HEAD
 lm2 <- lmer(TL~ dadage  + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
 lm2 <- standardize(lm2)
 summary(lm2)
+=======
+sr2 <- rep(NA,nrow(sr))
+for(i in 1:nrow(sr)) sr2[i] <- sr[i,2]/sum(sr[i,])
+>>>>>>> 89cf06b6af5712faf32a7dbfb269d139fb177db2
 
-lm2 <- lmer(TL~LmumTL + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
+plot(sr2~insect)
+
+apply(sr,1,binom.test)
+
+lm2 <- lmer(TL~ LmumTL + LdadTL + TQ + Ageclass + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
 lm2 <- standardize(lm2)
 summary(lm2)
 
-lm2 <- lmer(TL~LdadTL + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
+lm2 <- lmer(TL~Ageclass + EdadTL + TQ  + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
 lm2 <- standardize(lm2)
 summary(lm2)
+
+
+tapply(juv$SurvivedNext,list(juv$Sex,juv$Ageclass),mean)
+tapply(juv$SurvivedNext,list(juv$Sex,juv$Ageclass),length)
+
+
+boxplot(EmumTL~Ageclass,data=subset(juv,!(is.na(juv$EmumTL))))
+boxplot(EdadTL~Ageclass,data=subset(juv,!(is.na(juv$EdadTL))))
+
+
+insect <- tapply(dd$TL,dd$LayYear,mean,na.rm=T)
+insect <- insect[!(is.nan(insect))]
+sr <- tapply(dd$SexEstimate,dd$LayYear,mean)
+n <- tapply(dd$SexEstimate,dd$LayYear,length)
+sr <- sr[n>15]
+sr <- sr[complete.cases(sr)]
+sr <- sr[names(sr) %in% names(insect)]
+insect <- insect[names(insect) %in% names(sr)]
+
+plot(sr~insect)
 
 ```
 
@@ -195,9 +221,14 @@ Check to see whether this is an age effect.
 
 ```{r Figure 3,fig.width=8,fig.height=8}
 
+<<<<<<< HEAD
 Fig3A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = mumlife,y = SexEstimate)) +
   geom_point() +
   stat_sum() +
+=======
+Fig3A <- ggplot(juv,aes(x = mumlife,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+>>>>>>> 89cf06b6af5712faf32a7dbfb269d139fb177db2
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal Lifespan') +
   ylab('Proportion male offspring') +
@@ -215,9 +246,14 @@ Fig3B <- ggplot(juv,aes(x = dadlife,y = SexEstimate)) +
   theme_lgs() +
   geom_abline(slope = 0,intercept = 0.5,lty=2)
 
+<<<<<<< HEAD
 
 Fig3C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
   geom_point() +
+=======
+Fig3C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+>>>>>>> 89cf06b6af5712faf32a7dbfb269d139fb177db2
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   stat_sum() +
   xlab('Maternal age at hatching') +
@@ -233,11 +269,66 @@ Fig3D <- ggplot(juv,aes(x = dadage,y = SexEstimate)) +
   stat_sum() +
   xlab('Paternal age at hatching') +
   ylab('Proportion male offspring') +
+<<<<<<< HEAD
   theme_lgs() +
   geom_abline(slope = 0,intercept = 0.5,lty=2)
 
 
 multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2))
+=======
+  theme_lgs()
+
+multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2))
+
+
+```
+
+
+
+
+
+Run some models - we get significant effects for paternal age, paternal TL, and maternal TL, but not maternal age
+```{r models 2}
+
+lm1 <- glmer(SexEstimate~EdadTL + (1|father)+ (1|mother),data=juv,family='binomial',na.action=na.exclude)
+lm1<- standardize(lm1)
+summary(lm1)
+
+lm2 <- glmer(SexEstimate~LmumTL + (1|father)+ (1|mother),data=juv,family='binomial',na.action=na.exclude)
+lm2 <- standardize(lm2)
+summary(lm2)
+
+anova(lm1,lm2)
+
+
+
+
+lm1 <- glmer(SexEstimate~mumlife + (1|mother) + (1|father)
+             ,data=juv,family='binomial',na.action=na.exclude)
+lm1 <- standardize(lm1)
+summary(lm1)
+
+
+lm2 <- glmer(SexEstimate~mumage + (1|mother) + (1|father)
+             ,data=juv,family='binomial',na.action=na.exclude)
+lm2 <- standardize(lm2)
+summary(lm2)
+
+anova(lm1,lm2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 89cf06b6af5712faf32a7dbfb269d139fb177db2
 
 
 ```
