@@ -56,7 +56,7 @@ Fig1B <- ggplot(juv,aes(x = EdadTL, y = TL)) +
           xlab('Father juvenile TL') +
           ylab('Offspring TL') +
           theme_lgs()
-Fig1C <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL,col=dadageF)) +
+Fig1C <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
           geom_point() +
           stat_smooth(method=lm) +
           xlab('Mother adult TL') +
@@ -124,18 +124,9 @@ Run some models - In the first table, the same factors as before predict offspri
 ```{r model}
 
 
-<<<<<<< HEAD
 lm2 <- lmer(TL~ dadage  + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
 lm2 <- standardize(lm2)
 summary(lm2)
-=======
-sr2 <- rep(NA,nrow(sr))
-for(i in 1:nrow(sr)) sr2[i] <- sr[i,2]/sum(sr[i,])
->>>>>>> 89cf06b6af5712faf32a7dbfb269d139fb177db2
-
-plot(sr2~insect)
-
-apply(sr,1,binom.test)
 
 lm2 <- lmer(TL~ LmumTL + LdadTL + TQ + Ageclass + (1|mother) + (1|father) + (1|FieldPeriodID),data = juv,na.action=na.exclude)
 lm2 <- standardize(lm2)
@@ -221,14 +212,8 @@ Check to see whether this is an age effect.
 
 ```{r Figure 3,fig.width=8,fig.height=8}
 
-<<<<<<< HEAD
-Fig3A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = mumlife,y = SexEstimate)) +
-  geom_point() +
-  stat_sum() +
-=======
 Fig3A <- ggplot(juv,aes(x = mumlife,y = SexEstimate)) +
   geom_point(alpha=0.2) +
->>>>>>> 89cf06b6af5712faf32a7dbfb269d139fb177db2
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal Lifespan') +
   ylab('Proportion male offspring') +
@@ -246,14 +231,9 @@ Fig3B <- ggplot(juv,aes(x = dadlife,y = SexEstimate)) +
   theme_lgs() +
   geom_abline(slope = 0,intercept = 0.5,lty=2)
 
-<<<<<<< HEAD
 
 Fig3C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
-  geom_point() +
-=======
-Fig3C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
   geom_point(alpha=0.2) +
->>>>>>> 89cf06b6af5712faf32a7dbfb269d139fb177db2
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   stat_sum() +
   xlab('Maternal age at hatching') +
@@ -269,14 +249,9 @@ Fig3D <- ggplot(juv,aes(x = dadage,y = SexEstimate)) +
   stat_sum() +
   xlab('Paternal age at hatching') +
   ylab('Proportion male offspring') +
-<<<<<<< HEAD
   theme_lgs() +
   geom_abline(slope = 0,intercept = 0.5,lty=2)
 
-
-multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2))
-=======
-  theme_lgs()
 
 multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2))
 
@@ -328,7 +303,7 @@ anova(lm1,lm2)
 
 
 
->>>>>>> 89cf06b6af5712faf32a7dbfb269d139fb177db2
+
 
 
 ```
