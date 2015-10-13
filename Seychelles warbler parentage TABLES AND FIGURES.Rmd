@@ -131,7 +131,7 @@ multiplot(Fig2A,Fig2B,Fig2C,Fig2D,layout=matrix(1:4,2,2))
 **Figure 3**
 ```{r Figure 3,fig.width=8,fig.height=8}
 
-Fig3A <- ggplot(juv,aes(x = EmumTL,y = SexEstimate)) +
+Fig3A <- ggplot(juv,aes(x = TQ,y = SexEstimate,col=Ageclass)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal juvenile TL') +
