@@ -1,6 +1,7 @@
 ---
 output:
-  word_document
+  word_document:
+    reference_docx: myref.docx
 ---
 
 ```{r setup, include = F}
@@ -17,10 +18,10 @@ opts_chunk$set(echo=FALSE,
                warning=FALSE,
                message=FALSE,
                fig.path='../Figures/',
-               fig.width= 5,
-               fig.height= 4,
+               fig.width= 8,
+               fig.height= 8,
                fig.show='asis',
-               dev=c('png','pdf'))
+               dev=c('png'))
 
 ```
 
@@ -47,12 +48,11 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 
 
-
-```{r Figure1,fig.height = 8}
+**Figure 1**
+```{r Figure1}
 
 Fig1A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = EmumTL, y = TL)) +
           geom_point() +
-          stat_smooth(method=lm) +
           xlab('Mother juvenile TL') +
           ylab('Offspring TL') +
           theme_lgs()
@@ -72,7 +72,6 @@ Fig1C <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
 
 Fig1D <- ggplot(juv,aes(x = LdadTL, y = TL)) +
           geom_point() +
-          stat_smooth(method=lm) +
           xlab('Father adult TL') +
           ylab('Offspring TL') +
           theme_lgs()
@@ -84,31 +83,27 @@ multiplot(Fig1A,Fig1B,Fig1C,Fig1D,layout=matrix(1:4,2,2))
 
 
 **Figure 2**
-```{r Figure2,fig.height = 8}
+```{r Figure2}
 
-Fig2A <- ggplot(juv,aes(x = mumage, y = TL,col=Sex)) +
+Fig2A <- ggplot(juv,aes(x = mumage, y = TL)) +
           geom_point() +
-          stat_smooth(method=lm) +
           xlab('Mother age at hatching') +
           ylab('Offspring TL') +
           theme_lgs()
 
-Fig2B <- ggplot(juv,aes(x = dadage, y = TL,col=Sex)) +
+Fig2B <- ggplot(juv,aes(x = dadage, y = TL)) +
           geom_point() +
           stat_smooth(method=lm) +
           xlab('Father age at hatching') +
           ylab('Offspring TL') +
           theme_lgs()
-Fig2C <- ggplot(juv,aes(x = mumlife, y = TL,col=Sex)) +
+Fig2C <- ggplot(juv,aes(x = mumlife, y = TL)) +
           geom_point() +
-          stat_smooth(method=lm) +
           xlab('Mother lifespan') +
           ylab('Offspring TL') +
           theme_lgs()
-
-Fig2D <- ggplot(juv,aes(x = dadage, y = TL,col=Sex)) +
+Fig2D <- ggplot(juv,aes(x = dadage, y = TL)) +
           geom_point() +
-          stat_smooth(method=lm) +
           xlab('Father lifespan') +
           ylab('Offspring TL') +
           theme_lgs()
@@ -129,9 +124,9 @@ multiplot(Fig2A,Fig2B,Fig2C,Fig2D,layout=matrix(1:4,2,2))
 
 
 **Figure 3**
-```{r Figure 3,fig.width=8,fig.height=8}
+```{r Figure 3}
 
-Fig3A <- ggplot(juv,aes(x = TQ,y = SexEstimate,col=Ageclass)) +
+Fig3A <- ggplot(juv,aes(x = TQ,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal juvenile TL') +
@@ -175,9 +170,9 @@ multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2))
 
 
 **Figure 4**
-```{r Figure 4,fig.width=8,fig.height=8}
+```{r Figure 4}
 
-Fig3A <- ggplot(juv,aes(x = mumlife,y = SexEstimate)) +
+Fig4A <- ggplot(juv,aes(x = mumlife,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal Lifespan') +
@@ -187,9 +182,8 @@ Fig3A <- ggplot(juv,aes(x = mumlife,y = SexEstimate)) +
 
 
 
-Fig3B <- ggplot(juv,aes(x = dadlife,y = SexEstimate)) +
-  geom_point() +
-  stat_sum() +
+Fig4B <- ggplot(juv,aes(x = dadlife,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Paternal Lifespan') +
   ylab('Proportion male offspring') +
@@ -197,10 +191,9 @@ Fig3B <- ggplot(juv,aes(x = dadlife,y = SexEstimate)) +
   geom_abline(slope = 0,intercept = 0.5,lty=2)
 
 
-Fig3C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
+Fig4C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  stat_sum() +
   xlab('Maternal age at hatching') +
   ylab('Proportion male offspring') +
   theme_lgs() +
@@ -208,17 +201,16 @@ Fig3C <- ggplot(juv,aes(x = mumage,y = SexEstimate)) +
 
 
 
-Fig3D <- ggplot(juv,aes(x = dadage,y = SexEstimate)) +
-  geom_point() +
+Fig4D <- ggplot(juv,aes(x = dadage,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  stat_sum() +
   xlab('Paternal age at hatching') +
   ylab('Proportion male offspring') +
   theme_lgs() +
   geom_abline(slope = 0,intercept = 0.5,lty=2)
 
 
-multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2))
+multiplot(Fig4A,Fig4B,Fig4C,Fig4D,layout=matrix(1:4,2,2))
 
 
 ```

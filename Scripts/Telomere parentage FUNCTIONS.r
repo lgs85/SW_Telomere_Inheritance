@@ -458,10 +458,39 @@ ggsurv <- function(s, CI = 'def', plot.cens = T, surv.col = 'gg.def',
 # In-text functions -------------------------------------------------------
 
 
-#Round to 2 or 3 dp and keep trailing zeros
-round2 <- function(x)
+#Get statistic from model
+getstat <- function(model,variable,stat,standardise = T)
 {
-  if(x < 0.01)
+  if(standardise == T) model <- standardize(model)
+  modelterms <- rownames(summary(model)$coefficients)
+  if(paste('z.',variable,sep='') %in% modelterms) variable <- paste('z.',variable,sep='')
+  
+  if(class(model) %in% c('lmerMod','glmerMod'))
+  {
+    if(stat == 'CI')
+    {
+      CIs <- confint.merMod(model,nsim=100)
+      UCI <- round2(CIs[variable,2],lessthan=F)
+      LCI <- round2(CIs[variable,1],lessthan=F)
+      return(paste(LCI,'-',UCI))
+    } else
+    {
+      if(stat == 'est')
+      {
+        return(round2(summary(model)$coefficients[variable,'Estimate']))
+      } else stop('you need to add this stat to the function')
+    }
+  } else stop('you need to add this type of model to the function')
+}
+
+
+
+
+
+#Round to 2 or 3 dp and keep trailing zeros
+round2 <- function(x,lessthan = T)
+{
+  if(lessthan == T && x < 0.01)
   {
     return('< 0.01')
   } else
@@ -499,4 +528,10 @@ findpar <- function(x,parfile = pars,parent = 'mother')
   bird <- paste(x)
   return(parfile[which(parfile$offspring == bird),parent])
 }
+
+
+
+
+
+
 
