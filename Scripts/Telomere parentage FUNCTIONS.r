@@ -469,15 +469,16 @@ getstat <- function(model,variable,stat,standardise = T)
   {
     if(stat == 'CI')
     {
-      CIs <- confint.merMod(model,nsim=100)
-      UCI <- round2(CIs[variable,2],lessthan=F)
-      LCI <- round2(CIs[variable,1],lessthan=F)
-      return(paste(LCI,'-',UCI))
+      est <- summary(model)$coefficients[variable,'Estimate']
+      se1 <- summary(model)$coefficients[variable,'Std. Error']
+      UCI <- round2(est+(1.96*se1),lessthan = F)
+      LCI <- round2(est-(1.96*se1),lessthan = F)
+      return(paste(LCI,', ',UCI,sep = ''))
     } else
     {
       if(stat == 'est')
       {
-        return(round2(summary(model)$coefficients[variable,'Estimate']))
+        return(round2(summary(model)$coefficients[variable,'Estimate'], lessthan=F))
       } else stop('you need to add this stat to the function')
     }
   } else stop('you need to add this type of model to the function')
