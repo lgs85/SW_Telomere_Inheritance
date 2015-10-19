@@ -47,7 +47,7 @@ dd$LeftTarsus <- NULL
 # Remove unwanted data/outliers ----------------------------------------------------
 
 
-dd <- droplevels(subset(subset(dd,TL>1000),TL<15000))
+dd <- droplevels(subset(subset(dd,TL>1000),TL<13000))
 dd <- subset(dd,BodyMass>5)
 dd <- subset(dd,Tarsus>17)
 
@@ -69,7 +69,7 @@ for(i in 1:nrow(dd))
 
 mymed <- median(dd$TL)
 dd$TLF <- ifelse(dd$TL>mymed,'Long telomeres','Short telomeres')
-
+dd <- subset(dd,cenTL> -2)
 # Age data ----------------------------------------------------------------
 
 dd$Age <- dd$CatchYear-dd$LayYear
@@ -110,7 +110,7 @@ for(i in 1:nrow(dd))
 dd$RemainingLife <- dd$DeathYear-dd$CatchYear
 dd$SurvivedNext <- ifelse(dd$RemainingLife>0,1,0)
 dd$Lifespan <- dd$DeathYear-dd$LayYear
-dd$Died <- ifelse(dd$DeathYear<2013,1,0)
+dd$Died <- ifelse(dd$DeathYear<2015,1,0)
 
 
 
@@ -160,7 +160,6 @@ for(i in 1:nrow(dd))
 
 # Parentage ---------------------------------------------------------------
 
-
 pars$MumAge <- with(pars,LayYear-MumLayYear)
 pars$DadAge <- with(pars,LayYear-DadLayYear)
 
@@ -196,8 +195,8 @@ for(i in 1:nrow(ddpar))
   daddata <- subset(dd,BirdID == ddpar$father[i])[1,]
   ddpar$mumage[i] <- ddpar$LayYear[i] - mumdata$LayYear
   ddpar$dadage[i] <- ddpar$LayYear[i] - daddata$LayYear
-  ddpar$mumlife[i] <- mumdata$Lifespan
-  ddpar$dadlife[i] <- daddata$Lifespan
+  ddpar$mumlife[i] <- ifelse(mumdata$Died == 1, mumdata$Lifespan, NA)
+  ddpar$dadlife[i] <- ifelse(daddata$Died == 1,daddata$Lifespan, NA)
 }
 
 # Subset juveniles --------------------------------------------------------------
@@ -210,12 +209,6 @@ adults <- droplevels(subset(dd,Ageclass == 'A'))
 mymed <- mean(juv$cenTL,na.rm=T)
 juv$TLF <- ifelse(juv$cenTL > mymed,'Long telomeres','Short telomeres')
 
-mymed <- median(juv$dadage,na.rm=T)
-juv$dadAgeF <- ifelse(juv$dadage>mymed,'Old','Young')
-
-mymed <- median(juv$mumage,na.rm=T)
-juv$mumAgeF <- ifelse(juv$mumage>mymed,'Old','Young')
-
 
 
 
@@ -223,7 +216,6 @@ juv$mumAgeF <- ifelse(juv$mumage>mymed,'Old','Young')
 
 xf <- subset(juv,Status == 'XF')
 juv <- subset(juv,Status!='XF')
-
 
 # Helpers and social group size -------------------------------------------
 

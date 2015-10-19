@@ -41,17 +41,8 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 
 
-**Adaptive sex ratio allocation is linked to maternal TL in the Seychelles warbler**
+**Adaptive sex ratio allocation is linked to maternal telomere length in the Seychelles warbler**
 
-Lewis G. Spurgin^a,b^, Hannah, L. Dugdale^c,d^, Martijn Hammers, Kat Bebbington^a^, Eleanor A. Fairfield^a^, Jan Komdeur^c^, Terry Burke^d^  and David S. Richardson^a,e,^.
-
-a. School of Biological Sciences, University of East Anglia, Norwich Research Park, NR4 7TJ, United Kingdom
-b. Department of Zoology, Edward Grey Institute, University of Oxford, Oxford, UK
-c. Groningen Institute for Evolutionary Life Sciences, University of Groningen, Groningen, The Netherlands
-d. Department of Animal and Plant Sciences, NERC Biomolecular Analysis Facility, University of Sheffield, Sheffield, UK
-e. Nature Seychelles, Roche Caiman, Mahé, Republic of Seychelles
-
-**Correspondence:** Lewis Spurgin: lewisspurgin@gmail.com; David Richardson: david.richardson@uea.ac.uk
 
 
 **Abstract**
@@ -59,67 +50,90 @@ e. Nature Seychelles, Roche Caiman, Mahé, Republic of Seychelles
 
 **Introduction**
 
-The Seychelles warbler (*Acrocephalus sechellensis*) constitutes a textbook example of adaptive sex ratio modification [@Komdeur1996; @Komdeur1997]. The Seychelles warbler is a facultative cooperative breeder - in good environmental conditions, daughters often remain on their natal territory to help rear their siblings.  Komdeur *et al.* [-@Komdeur1997] showed that 
+Sex ratio adjustment and adaptive evolution
+
+Sex ratio adjustment in birds
+
+Telomeres as biomarkers of cost/condition
+
+The Seychelles warbler (*Acrocephalus sechellensis*) constitutes a textbook example of adaptive sex ratio modification [@Komdeur1996; @Komdeur1997]. The Seychelles warbler is a facultative cooperative breeder - in good environmental conditions, daughters often remain on their natal territory to help rear their siblings.
 
 In this study we combine telomere data with the long-term Seychelles warbler data set to test the hypothesis parental condition is related to offspring sex ratio. Specifically, we test the hypothesis that mothers and fathers with longer telomerers produce more females.
-
 
 
 **Methods**
 
 *Study species and sampling*
+They Seychelles warbler is blah blah blah
 
 *Molecular methods*
 
+DNA is extracted from all blood samples using an ammonium-acetate-based protocol [@Richardson2001], and sex is determined using by PCR [@Griffiths1998]. All samples were genotyped at 30 polymorphic microsatellite loci arranged into four multiplex reactions [see @Spurgin2014a for details]. Telomeres were measured from a total of `r nrow(dd)` samples. Of these, `r nrow(juv)` were from juvenile birds for which we had parentage data with telomere length measurements available from at least one parent. We measured absolute telomere length using a qPCR method with absolute standards [full details provided in @Barrett2012].
+
 *Statistical analyses*
-We used linear mixed effects models (LMMs) to test for a relationship between parental and juvenile TL. Juvenile TL was entered as the response variable, age class as a fixed factor, and as covariates we included maternal and paternal TL, seasonal food availability, territory quality and the number of helpers present in the natal territory. As our dataset spanned many breeding seasons, and contained multiple juveniles from the same parents, we included an index of the breeding season, maternal ID and paternal ID as random factors. In order to differentiate between parental quality and parental condition, we partitioned parental TL into 'juvenile parental TL' and 'adult parental TL'. Juvenile TL is related to later-life survival, and is thus a biomarker of individual quality, whereas adult TL is expected to reflect the stresses encountered over their adult life, and is thus a marker of condition. Because juvenile and adult parental TL are correlated, we ran separate models for these two variables, keep all other variables the same.
 
-We then separately tested whether parental age was related to offspring TL, again using LMMs. These were constructed as above, but with parental age and parental lifespan added as covriates in place of parental (adult and juvenile) TL. We chose to run these models separately from the models including parental TL due to collinearity issues between TL and age [@Barrett2012]. We compared models containing parental TL to those containing parental age using AICc values.
+All statitical analyses were carried out using `r substr(R.version.string,1,15)` [@RDevelopmentCoreTeam2011]. Parentage was assigned using MasterBayes (HANNAH TO DO).
 
-Finally, we used generalized linear mixed effects models (GLMMs) with a binomial error structure to test how parental TL is related to offspring sex ratio. These models were constructed exactly as the LMMs above, but with offspring sex as the response variable.
+We used linear mixed effects models (LMMs) to test for a relationship between parental and offspring TL. Juvenile TL was entered as the response variable, age class as a fixed factor, and as covariates we included maternal and paternal TL, seasonal food availability, territory quality and the number of helpers present in the natal territory. As our dataset spanned many years, and contained multiple juveniles from the same parents, we included birth year, maternal ID and paternal ID as random factors. In order to differentiate between parental quality and parental condition, we partitioned parental TL into 'juvenile parental TL' and 'adult parental TL', and a separate model for each. Juvenile TL is expected to reflect inheritance, whereas adult TL is expected to reflect the stresses encountered over their adult life, and is thus a marker of condition. Because juvenile and adult parental TL are correlated, we ran separate models for these two variables, keep all other variables the same.
+
+We next tested whether parental age at hatching and parental lifespan were related to offspring TL, again using LMMs. While parental lifespan is likely to be an indicator of individual quality, parental age may reflect condition. These models were constructed as above, but with parental age and parental lifespan added as covariates in place of parental TL. We ran these models separately from the models including parental TL due to collinearity issues between TL, age and lifespan [@Barrett2012; Spurgin *et al.* Submitted]; thus, in total we ran four separate LMMs (parental juvenile TL, parental adult TL, parental age and parental lifespan).
+
+Finally, we used generalized linear mixed effects models (GLMMs) with a binomial error structure to test how parental TL is related to offspring sex ratio. Offspring sex was included as a binary response variable, offspring age class as a fixed factor, and territory quality and the number of helpers were included as covariates, as both of these variables have been previously demonstrated to predict offspring sex ratio [@Komdeur1997]. Random effects were specified as with the LMMs, above. As with the LMMs, we ran four separate GLMMs, separately testing how parental juvenile TL, parental adult TL, parental age and parental lifespan were related to offspring sex.
+
 
 
 **Results**
 ```{r models,include = F}
 
 #Juvenile TL and parental juvenile TL
-juvTL_EdadTL <- lmer(TL~EdadTL+Tarsus+Helper + (1|father),data = juv,na.action=na.exclude)
-juvTL_EmumTL <- lmer(TL~EmumTL+Ageclass+Tarsus+Helper + (1|mother),data = juv,na.action=na.exclude)
+juvTL_EdadTL <- lmer(cenTL~EdadTL+Tarsus+Helper + (1|father) + (1|LayYear),data = juv,na.action=na.exclude)
+juvTL_EmumTL <- lmer(cenTL~EmumTL+Fledged+Tarsus+Helper + (1|mother) + (1|LayYear),data = juv,na.action=na.exclude)
 
 #Juvenile TL and parental adult TL
-juvTL_LparTL <- lmer(TL~LmumTL + LdadTL + Ageclass + Tarsus + Helper + (1|mother) + (1|father),data = juv,na.action=na.exclude)
+juvTL_LdadTL <- lmer(cenTL~LdadTL + Fledged + Tarsus + Helper + (1|father) + (1|LayYear),data = juv,na.action=na.exclude)
+juvTL_LmumTL <- lmer(cenTL~LmumTL + Fledged + Tarsus + Helper + (1|mother) + (1|LayYear),data = juv,na.action=na.exclude)
 
 
 #Juvenile TL and parental age
-juvTL_parage <- lmer(TL~mumage + dadage + Ageclass + Tarsus + Helper + (1|mother) + (1|father),data = juv,na.action=na.exclude)
+juvTL_parage <- lmer(cenTL~mumage + dadage + Fledged + Tarsus + Helper + (1|mother) + (1|father) + (1|LayYear),data = juv,na.action=na.exclude)
 
 #Juvenile TL and parental lifespan
-juvTL_parlife <- lmer(TL~mumlife + dadlife + Ageclass + Tarsus + Helper + (1|mother) + (1|father),data = juv,na.action=na.exclude)
+juvTL_dadlife <- lmer(cenTL~dadlife + dadlife + Fledged + Tarsus + Helper + (1|father) + (1|LayYear),data = juv,na.action=na.exclude)
+juvTL_mumlife <- lmer(cenTL~mumlife + Fledged + Tarsus + Helper + (1|mother) + (1|LayYear),data=juv,na.action=na.exclude)
 
 
-#Sex ratio and parental juvenle TL
-sr_EdadTL <- glmer(SexEstimate ~ EdadTL + Ageclass + TQ*Helper + (1|father),data = juv,family = 'binomial', na.action=na.exclude)
-sr_EmumTL <- lmer(SexEstimate ~ EmumTL + Ageclass + TQ*Helper + (1|mother),data = juv,family = 'binomial',na.action=na.exclude)
 
 #Sex ratio and parental juvenle TL
-sr_LparTL <- glmer(SexEstimate ~ LdadTL + LmumTL + Ageclass + TQ*Helper + (1|mother) + (1|father),data = juv,family = 'binomial',na.action=na.exclude)
+sr_EdadTL <- glmer(SexEstimate ~ EdadTL + Fledged + TQ + Helper + (1|father) + (1|LayYear),data = juv,family = 'binomial', na.action=na.exclude)
+sr_EmumTL <- lmer(SexEstimate ~ EmumTL + Fledged + TQ + Helper + (1|mother) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
+
+#Sex ratio and parental juvenle TL
+sr_LmumTL <- glmer(SexEstimate ~  LmumTL + Fledged + TQ + Helper + (1|mother) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
+sr_LdadTL <- glmer(SexEstimate ~ LdadTL  + Fledged + TQ + Helper + (1|father) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
 
 #Sex ratio and parental age
-sr_parage <- glmer(SexEstimate ~ mumage + dadage + Ageclass + TQ*Helper + (1|mother) + (1|father),data = juv,family = 'binomial',na.action=na.exclude)
+sr_mumage <- glmer(SexEstimate ~ mumage + Fledged + TQ + Helper + (1|mother) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
+sr_dadage <- glmer(SexEstimate ~ dadage + Fledged + TQ + Helper + (1|father) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
+
 
 #Sex ratio and parental lifespan
-sr_parlife <- glmer(SexEstimate ~ mumlife + dadlife + Ageclass + TQ*Helper + (1|mother) + (1|father),data = juv,family = 'binomial',na.action=na.exclude)
-
+sr_mumlife <- glmer(SexEstimate ~ mumlife + Fledged + TQ + Helper + (1|mother) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
+sr_dadlife <- glmer(SexEstimate ~ dadlife + Fledged + TQ + Helper + (1|father) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
 
 ```
 
 
-Seychelles warbler juvenile TL was not related to maternal juvenile TL (estimate = `r getstat(juvTL_EmumTL, 'EmumTL','est')`, CIs = `r getstat(juvTL_EmumTL, 'EmumTL','CI')`; Fig. 1A), but was positively related to maternal adult TL (estimate = `r getstat(juvTL_LparTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LparTL, 'LmumTL','CI')`; Fig. 1B). Conversely, juvenile TL was positively related to paternal juvenile TL (estimate = `r getstat(juvTL_EdadTL, 'EdadTL','est')`, CIs = `r getstat(juvTL_EdadTL, 'EdadTL','CI')`; Fig. 1C), but was not related to paternal adult TL (estimate = `r getstat(juvTL_LparTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LparTL, 'LdadTL','CI')`; Fig. 1D). Juvenile TL was not related to maternal age (estimate = `r getstat(juvTL_parage, 'mumage','est')`, CIs = `r getstat(juvTL_parage, 'mumage','CI')`; Fig. 2A), but was positvely associated with maternal lifespan (estimate = `r getstat(juvTL_parlife, 'mumlife','est')`, CIs = `r getstat(juvTL_parlife, 'mumlife','CI')`; Fig. 2B). Finally, juvenile TL was not associated with paternal age (estimate = `r getstat(juvTL_parage, 'dadage','est')`, CIs = `r getstat(juvTL_parage, 'dadage','CI')`; Fig. 2C) or paternal lifespan (estimate = `r getstat(juvTL_parlife, 'dadlife','est')`, CIs = `r getstat(juvTL_parlife, 'dadlife','CI')`; Fig. 2D).
+Seychelles warbler offspring TL was not related to maternal juvenile TL (estimate = `r getstat(juvTL_EmumTL, 'EmumTL','est')`, CIs = `r getstat(juvTL_EmumTL, 'EmumTL','CI')`), but was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI')`; Fig. 1A). Conversely, offspring TL was positively related to paternal juvenile TL (estimate = `r getstat(juvTL_EdadTL, 'EdadTL','est')`, CIs = `r getstat(juvTL_EdadTL, 'EdadTL','CI')`; Fig. 1B), but was not related to paternal adult TL (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI')`). Offspring TL was not related to maternal age (estimate = `r getstat(juvTL_parage, 'mumage','est')`, CIs = `r getstat(juvTL_parage, 'mumage','CI')`), maternal lifespan (estimate = `r getstat(juvTL_mumlife, 'mumlife','est')`, CIs = `r getstat(juvTL_mumlife, 'mumlife','CI')`) paternal age (estimate = `r getstat(juvTL_parage, 'dadage','est')`, CIs = `r getstat(juvTL_parage, 'dadage','CI')`) or paternal lifespan (estimate = `r getstat(juvTL_dadlife, 'dadlife','est')`, CIs = `r getstat(juvTL_dadlife, 'dadlife','CI')`). 
 
-Offspring sex ratio was not related to maternal juvenile TL (estimate = `r getstat(sr_EmumTL, 'EmumTL','est')`, CIs = `r getstat(sr_EmumTL, 'EmumTL','CI')`; Fig. 3A), but longer maternal adult TL was significantly related to offspring sex ratio (estimate = `r getstat(sr_LparTL, 'LmumTL','est')`, CIs = `r getstat(sr_LparTL, 'LmumTL','CI')`); mothers with longer telomeres as adults had more females offspring compared to mothers with shorter telomeres (Fig. 3B). A similar result was found for patenral TL: offspring sex ratio was not related to paternal juvunile TL (estimate = `r getstat(sr_EdadTL, 'EdadTL','est')`, CIs = `r getstat(sr_EdadTL, 'EdadTL','CI')`; Fig. 3C), but fathers with longer telomeres as adults had significantly more females (estimate = `r getstat(sr_LparTL, 'LdadTL','est')`, CIs = `r getstat(sr_LparTL, 'LdadTL','CI')`; Fig. 3D). 
+Offspring sex ratio was not related to maternal juvenile TL (estimate = `r getstat(sr_EmumTL, 'EmumTL','est')`, CIs = `r getstat(sr_EmumTL, 'EmumTL','CI')`), but was significantly related to maternal adult TL (estimate = `r getstat(sr_LmumTL, 'LmumTL','est')`, CIs = `r getstat(sr_LmumTL, 'LmumTL','CI')`); mothers with longer telomeres as adults had more female offspring compared to mothers with shorter telomeres (Fig. 2A). Offspring sex ratio was not related to paternal juvunile TL (estimate = `r getstat(sr_EdadTL, 'EdadTL','est')`, CIs = `r getstat(sr_EdadTL, 'EdadTL','CI')`), or paternal adult TL (estimate = `r getstat(sr_LdadTL, 'LdadTL','est')`, CIs = `r getstat(sr_LdadTL, 'LdadTL','CI')`). Offspring sex ratio was not related to either maternal age (estimate = `r getstat(sr_mumage, 'mumage','est')`, CIs = `r getstat(sr_mumage, 'mumage','CI')`) or maternal lifespan (estimate = `r getstat(sr_mumlife, 'mumlife','est')`, CIs = `r getstat(sr_mumlife, 'mumlife','CI')`). However, older fathers had significantly more female offspring (estimate = `r getstat(sr_dadage, 'dadage','est')`, CIs = `r getstat(sr_dadage, 'dadage','CI')`; Fig. 2B). Finally, there was no relationship between paternal lifespan and offspring sex ratio (estimate = `r getstat(sr_dadlife, 'dadlife','est')`, CIs = `r getstat(sr_dadlife, 'dadlife','CI')`).
 
-Offspring sex ratio was not related to either maternal age (estimate = `r getstat(sr_parage, 'mumage','est')`, CIs = `r getstat(sr_parage, 'mumage','CI')`; Fig. 4A) or maternal lifespan (estimate = `r getstat(sr_parlife, 'mumlife','est')`, CIs = `r getstat(sr_parlife, 'mumlife','CI')`; Fig. 4B). However, older fathers had significantly more female offspring (estimate = `r getstat(sr_parage, 'dadage','est')`, CIs = `r getstat(sr_parage, 'dadage','CI')`; Fig. 4C). There was no relationship between paternal lifespan and offspring sex ratio (estimate = `r getstat(sr_parlife, 'dadlife','est')`, CIs = `r getstat(sr_parlife, 'dadlife','CI')`; Fig. 4D).
-
-To tease apart whether parental age or telomere effects were most importand driving offspring telomere length, we used an information theoretic approach. The best model with offspring telomere length as the response variable was the one containing parental adult telomere lengths as predictors (AICc = `r round2(AICc(juvTL_LparTL))`), which was a better fit than the model containing parental age (AICc = `r round2(AICc(juvTL_parage))`) and parental lifespan (AICc = `r round2(AICc(juvTL_parlife))`). The same result was found when offspring sex raito was the response variable: the model with parental telomere length as predictors had a lower AICc (`r round2(AICc(sr_LparTL))`) than models containing parental age (AICc = `r round2(AICc(sr_parage))`) or parental lifespan (AICc = `r round2(AICc(sr_parlife))`).
 
 **Discussion**
+
+It is difficult to disentangle the effects of paternal juvenile telomere length and maternal adult telomere length on offspring telomere length, as these two predictor variables are correlated (R = `r round2(with(juv,cor(EdadTL,LmumTL,use='complete.obs')),lessthan=F)`, P = `r round2(with(juv,cor.test(EdadTL,LmumTL,use='complete.obs'))$p.value,lessthan=F)`). Need to think about about why this is the case - seems interesting, and likely environment driven. 
+
+The effects of paternal age and maternal adult telomere length on offspring sex ratio are almost certainly independent, as these two variables are notcorrelated with one another (R = `r round2(with(juv,cor(dadage,LmumTL,use='complete.obs')),lessthan=F)`, P = `r round2(with(juv,cor.test(dadage,LmumTL,use='complete.obs'))$p.value,lessthan=F)`).
+
+round2(with(juv,cor(EdadTL,LmumTL,use='complete.obs')),lessthan=F)
+
+**References**
