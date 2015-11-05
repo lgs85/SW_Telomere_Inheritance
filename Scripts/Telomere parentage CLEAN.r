@@ -47,10 +47,10 @@ dd$LeftTarsus <- NULL
 # Remove unwanted data/outliers ----------------------------------------------------
 
 
-dd <- droplevels(subset(subset(dd,TL>1000),TL<13000))
+dd <- droplevels(subset(subset(dd,TL>1000),TL<12000))
 dd <- subset(dd,BodyMass>5)
 dd <- subset(dd,Tarsus>17)
-
+dd <- subset(dd,LayYear>1992)
 
 # Telomere data -----------------------------------------------------------
 
@@ -73,7 +73,6 @@ dd <- subset(dd,cenTL> -2)
 # Age data ----------------------------------------------------------------
 
 dd$Age <- dd$CatchYear-dd$LayYear
-
 
 #Sort out and order ageclass levels
 dd <- droplevels(dd[dd$Ageclass != '',])
@@ -137,7 +136,10 @@ insects <- subset(insects,FieldPeriodID != 26)
 insects$Insectcen <- (insects$MeanInsects-mean(insects$MeanInsects))/sd(insects$MeanInsects)
 
 # take average for year
-terrmean <- tapply(terr$cenTQ,terr$TerritoryID,mean)
+terrmean <- tapply(terr$TQ,terr$TerritoryID,mean)
+
+
+
 
 dd$TQ <- NA
 dd$Insect <- NA
@@ -160,6 +162,8 @@ for(i in 1:nrow(dd))
 
 # Parentage ---------------------------------------------------------------
 
+pars <- subset(pars,prob>0.79)
+
 pars$MumAge <- with(pars,LayYear-MumLayYear)
 pars$DadAge <- with(pars,LayYear-DadLayYear)
 
@@ -174,7 +178,7 @@ ddpar$EPP <- ifelse(is.na(ddpar$father),'Extra pair','Within pair')
 #Get parental telomere lngth from both early and later life
 ddDate <- dd[order(dd$BirdID,dd$CatchDate),]
 earlies <- subset(ddDate,Ageclass!='A')
-lates <- subset(ddDate,Ageclass == 'A')
+lates <- subset(ddDate,Ageclass !='CH')
 
 #Early life parental TL
 ParTL <- with(earlies,aggregate(TL,list(BirdID),mean))
@@ -230,3 +234,54 @@ for(i in 1:nrow(juv))
   juv$OtherJuvs[i] <- nrow(subset(currentdata,Status %in% c('CH','FL','OFL')))
   juv$NonHelper[i] <- nrow(subset(currentdata,Status %in% c('AB','ABX')))
 }
+
+juv$EbothTL <- apply(juv[,c('EmumTL','EdadTL')],1,mean)
+juv$LbothTL <- apply(juv[,c('LmumTL','LdadTL')],1,mean)
+
+juv$TQI <- juv$TQ/(juv$Helper+1)
+
+
+juv$InsectF <- ifelse(juv$Insect>0, 'Good Years','Bad Years')
+
+
+
+
+
+# Look at telomere loss ---------------------------------------------------
+
+x1 <- aggregate(CatchDate~BirdID,adults,min)
+x2 <- merge(adults,x1)
+x2 <- x2[!(duplicated(x2$BirdID)),]
+
+
+x3 <- aggregate(TLKB~BirdID,juv,max)
+x4 <- merge(x3,juv)
+x4 <- x4[!(duplicated(x4$BirdID)),]
+
+x2 <- x2[x2$BirdID %in% x4$BirdID,]
+x4 <- x4[x4$BirdID %in% x2$BirdID,]
+
+x3 <- x3[order(x3$BirdID),]
+x4 <- x4[order(x4$BirdID),]
+
+xx1 <- x4$TLKB-mean(x4$TLKB)
+xx2 <- x2$TLKB-mean(x2$TLKB)          
+
+rho <- cor(x4$TLKB,x2$TLKB)
+
+(rho*xx1)-xx2
+
+Loss <- data.frame(x4,
+                   Loss = x4$TL-x2$TL,
+                   TimeDiff = as.numeric(x2$CatchDate-x4$CatchDate),
+                   D=(rho*xx1)-xx2)
+Loss$TROC <- with(Loss,D/TimeDiff)
+
+
+
+Loss <- subset(subset(Loss,TROC > -0.01),TROC < 0.02)
+Loss <- subset(subset(Loss,TimeDiff<1460),TimeDiff>365)
+ 
+
+
+
