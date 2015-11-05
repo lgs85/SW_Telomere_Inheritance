@@ -17,7 +17,7 @@ colnames(dd)[colnames(dd) == 'MinOfFieldPeriodID'] <- 'FieldPeriodID'
 
 
 # Catch Year, Catch date and death year ----------------------------------
-
+c
 
 dd$CatchYear <- as.numeric(substr(dd$CatchDate,7,10))
 dd$DeathYear <- as.numeric(substr(dd$DeathDate,7,10))
@@ -139,7 +139,7 @@ insects$Insectcen <- (insects$MeanInsects-mean(insects$MeanInsects))/sd(insects$
 terrmean <- tapply(terr$TQ,terr$TerritoryID,mean)
 
 
-
+iyear <- tapply(insects$Insectcen,insects$Year,mean)
 
 dd$TQ <- NA
 dd$Insect <- NA
@@ -157,7 +157,7 @@ for(i in 1:nrow(dd))
   } 
 }
 
-
+dd <- subset(dd,TQ<60000)
 
 
 # Parentage ---------------------------------------------------------------
@@ -199,6 +199,7 @@ for(i in 1:nrow(ddpar))
   daddata <- subset(dd,BirdID == ddpar$father[i])[1,]
   ddpar$mumage[i] <- ddpar$LayYear[i] - mumdata$LayYear
   ddpar$dadage[i] <- ddpar$LayYear[i] - daddata$LayYear
+  ddpar$mumfood[i] <- mumdata$TQ
   ddpar$mumlife[i] <- ifelse(mumdata$Died == 1, mumdata$Lifespan, NA)
   ddpar$dadlife[i] <- ifelse(daddata$Died == 1,daddata$Lifespan, NA)
 }
@@ -285,3 +286,28 @@ Loss <- subset(subset(Loss,TimeDiff<1460),TimeDiff>365)
 
 
 
+# Sex ratio by year -------------------------------------------------------
+
+sr <- tapply(allcatches$SexEstimate,allcatches$LayYear,mean,na.rm=T)
+srn <- tapply(allcatches$SexEstimate,allcatches$LayYear,length)
+
+sr <- sr[srn>20]
+sr <- sr[names(sr)>1989]
+
+
+sims <- rep(NA,5000)
+upperCI <- rep(NA,length(sr))
+lowerCI <- rep(NA,length(sr))
+
+set.seed(111)
+
+for(i in 1:length(sr))
+{
+  currentyear <- names(sr[i])
+  n <- srn[names(srn) == currentyear]
+  for(j in 1:5000) sims[j] <- mean(sample(c(0,1),n,replace = T))
+  upperCI[i] <- quantile(sims,0.95)
+  lowerCI[i] <- quantile(sims,0.05)
+}
+
+ddFig1 <- data.frame(Year = as.numeric(names(sr)),sr,upperCI,lowerCI,row.names = NULL)

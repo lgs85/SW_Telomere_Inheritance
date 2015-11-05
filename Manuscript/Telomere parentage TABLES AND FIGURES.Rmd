@@ -52,82 +52,69 @@ PAGEBREAK
 
 ```{r Figure1}
 
-Fig1A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
-  geom_point() +
-  stat_smooth(method=lm) +
-  xlab('Maternal adult TL (bp)') +
-  ylab('Offspring TL (bp)') +
+Fig1A <- ggplot(ddFig1,aes(x = Year, y = sr)) +
+  geom_line() +
+  geom_line(aes(y = upperCI),lty = 2) +
+  geom_line(aes(y = lowerCI),lty = 2) +
   theme_lgs() +
-  annotate(geom = 'text',x = 2000,y = 12000,label = 'A')
+  ylim(c(0,1)) +
+  ylab('Proportion male offspring') +  
+  annotate(geom = 'text',x = 1990,y = 1,label = 'A')
 
-Fig1B <- ggplot(juv,aes(x = EdadTL, y = TL)) +
-  geom_point() +
-  stat_smooth(method=lm) +
-  xlab('Paternal juvenile TL (bp)') +
-  ylab('Offspring TL (bp)') +
+Fig1B <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Maternal telomere length (bp)') +
+  ylab('Proportion male offspring') +
   theme_lgs() +
-  annotate(geom = 'text',x = 2000,y = 12000,label = 'B')
-
+  annotate(geom = 'text',x = 1000,y = 1,label = 'B')
 
 multiplot(Fig1A,Fig1B)
 
 ```
 
+```{r Figure2}
 
-PAGEBREAK
-
-
-
-**Figure 2**
-
-```{r Figure 2}
-
-
-Fig2A <- ggplot(juv,aes(x = LmumTL,y = SexEstimate)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Maternal adult TL (bp)') +
-  ylab('Proportion male offspring') +
+Fig2A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
+  geom_point() +
+  stat_smooth(method=lm) +
+  xlab('Maternal telomere length (bp)') +
+  ylab('Offspring telomere length (bp)') +
   theme_lgs() +
-  geom_abline(slope = 0,intercept = 0.5,lty=2) +  
-  annotate(geom = 'text',x = 1000,y = 1.1,label = 'A')
+  annotate(geom = 'text',x = 1000,y = 12000,label = 'A')
 
-Fig2B <- ggplot(juv,aes(x = dadage,y = SexEstimate)) +
+Fig2B <- ggplot(juv,aes(x = LmumTL,y = SurvivedNext,col = Sex,fill=Sex)) +
   geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Paternal age at hatching (years)') +
-  ylab('Proportion male offspring') +
+  stat_smooth(method = 'glm',family = 'binomial',se=T,fullrange=T) +
+  xlab('Maternal telomere length (bp)') +
+  ylab('Probability of survival') +
   theme_lgs() +
-  geom_abline(slope = 0,intercept = 0.5,lty=2) +  
-  annotate(geom = 'text',x = 1.1,y = 1.1,label = 'B')
+  annotate(geom = 'text',x = 1000,y = 1,label = 'B')
 
 multiplot(Fig2A,Fig2B)
 
 ```
 
 
-```{r Figure 3}
-Fig3A <- ggplot(juv,aes(x = LmumTL,y = SurvivedNext,col = Sex)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T,fullrange=T) +
-  xlab('Maternal telomere length') +
-  ylab('Probability of survival') +
-  theme_lgs()
+ddFig1$Insect <- NA
+ddFig1$TL <- NA
 
-Fig3B <- ggplot(juv,aes(x = dadage,y = SurvivedNext,col = Sex)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T,fullrange=T) +
-  xlab('Maternal telomere length') +
-  ylab('Probability of survival') +
-  theme_lgs()
+TLmean <- tapply(adults$TL,adults$CatchYear,mean,na.rm=T)
 
-multiplot(Fig3A,Fig3B)
-```
+for(i in 1:nrow(ddFig1))
+{
+if(ddFig1$Year[i] %in% names(iyear)) ddFig1$Insect[i] <- iyear[names(iyear) == ddFig1$Year[i]]
+
+if(ddFig1$Year[i] %in% names(TLmean)) ddFig1$TL[i] <- TLmean[names(TLmean) == ddFig1$Year[i]]
+}
 
 
-ggplot(subset(Loss,dadage<13),aes(x = LmumTL,y = TROC,col = Sex)) +
-geom_point() +
-stat_smooth(method = 'lm')+
-theme_lgs()
 
-summary(lm(TROC~dadage+Sex,data=Loss,na.action=na.exclude))
+ggplot(ddFig1,aes(x = Insect,y = sr)) +
+geom_point() + theme_lgs() +
+stat_smooth(method = 'lm') +
+ylab('Proportion males')
+
+
+plot(LmumTL~Insect,data=juv)
+

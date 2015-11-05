@@ -6,6 +6,7 @@ status <- read.csv('Data/SW TL all breedstatus.csv')
 insects <- read.csv('Data/Insects.csv')
 pars <- read.csv('Data/Hannah parentage no EPP with sex.csv')
 statusdate <- read.csv('Data/SW TL breedstatus with date and Territory.csv')
+allcatches <- read.csv('Data/SW_all_juv_catches.csv')
 
 # Load relevant libraries -------------------------------------------------
 library(MuMIn)
