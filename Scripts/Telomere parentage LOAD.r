@@ -9,7 +9,6 @@ statusdate <- read.csv('Data/SW TL breedstatus with date and Territory.csv')
 allcatches <- read.csv('Data/SW_all_juv_catches.csv')
 
 # Load relevant libraries -------------------------------------------------
-library(MuMIn)
 library(arm)
 library(plyr)
 library(ggplot2)

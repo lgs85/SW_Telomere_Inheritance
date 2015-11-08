@@ -67,7 +67,7 @@ Telomeres as biomarkers of cost/condition
 
 In this study we test the hypothesis that parental telomere length is related to offspring sex ratio in the Seychelles warbler(*Acrocephalus sechellensis*). This species constitutes a textbook example of adaptive sex ratio modification [@Komdeur1997; @Frank 1998]. The Seychelles warbler is a facultative cooperative breeder - in good environmental conditions, daughters often remain on their natal territory to help rear their siblings.
 
-Specifically, we test the hypothesis that mothers longer telomeres produce more females. We then then test whether longer telomeres in mothers is related to offspring telomere length and survival.
+We first test the hypothesis that mothers with longer telomeres produce more females. We then then test whether longer telomeres in mothers is related to offspring telomere length and survival.
 
 
 
@@ -85,7 +85,7 @@ juvTL_LdadTL <- lmer(TL~LdadTL + Fledged + Tarsus + Helper + (1|father) + (1|Lay
 juvTL_LmumTL <- lmer(TL~LmumTL + Fledged + Tarsus + Helper +(1|mother) + (1|LayYear),data = juv2,na.action=na.exclude)
 
 juv3 <- subset(juv2,Fledged == 'Fledglings')
-jsurv <- glm(Lifespan~Sex,data=juv,family = poisson,na.action=na.exclude)
+jsurv <- glm(SurvivedNext~Sex+LmumTL,data=juv,family = binomial,na.action=na.exclude)
 summary(jsurv)
 
 ```
