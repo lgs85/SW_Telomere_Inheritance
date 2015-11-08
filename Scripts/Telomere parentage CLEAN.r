@@ -54,22 +54,9 @@ dd <- subset(dd,LayYear>1992)
 
 # Telomere data -----------------------------------------------------------
 
-dd$TLKB <- dd$TL/1000
-dd$LogTL <- log(dd$TL)
-
-dd$cenTL <- NA
-
-#Centre telomere length by Field period
-for(i in 1:nrow(dd))
-{
-  currentdata <- subset(dd,FieldPeriodID == FieldPeriodID[i])
-  dd$cenTL[i] <- (dd$TLKB[i] - mean(currentdata$TLKB))/sd(currentdata$TLKB)
-}
-
-
 mymed <- median(dd$TL)
 dd$TLF <- ifelse(dd$TL>mymed,'Long telomeres','Short telomeres')
-dd <- subset(dd,cenTL> -2)
+
 # Age data ----------------------------------------------------------------
 
 dd$Age <- dd$CatchYear-dd$LayYear
@@ -93,15 +80,6 @@ dd$AgemonthF <- ifelse(dd$Ageclass == 'CH','<1',
 dd$AgemonthF <- factor(dd$AgemonthF,levels = c('<1','1-9','9-12','>12'))
 
 dd <- subset(dd,Agemonths>0)
-
-#Delta age
-for(i in 1:nrow(dd))
-{
-  currentdata = subset(dd,BirdID == dd$BirdID[i])
-  dd$MeanAge[i] <- mean(currentdata$Age)
-  dd$DeltaAge[i] <- dd$Age[i]-dd$MeanAge[i]
-}
-
 
 
 # Survival and lifespan ---------------------------------------------------
@@ -132,7 +110,6 @@ for(i in 1:nrow(terr))
   terr$cenTQ[i] <- (terr$TQcorrected[i] - mean(currentTQ))/sd(currentTQ)
 }
 
-insects <- subset(insects,FieldPeriodID != 26)
 insects$Insectcen <- (insects$MeanInsects-mean(insects$MeanInsects))/sd(insects$MeanInsects)
 
 # take average for year
@@ -157,7 +134,7 @@ for(i in 1:nrow(dd))
   } 
 }
 
-dd <- subset(dd,TQ<60000)
+
 
 
 # Parentage ---------------------------------------------------------------
@@ -178,7 +155,7 @@ ddpar$EPP <- ifelse(is.na(ddpar$father),'Extra pair','Within pair')
 #Get parental telomere lngth from both early and later life
 ddDate <- dd[order(dd$BirdID,dd$CatchDate),]
 earlies <- subset(ddDate,Ageclass!='A')
-lates <- subset(ddDate,Ageclass !='CH')
+lates <- subset(ddDate,Ageclass =='A')
 
 #Early life parental TL
 ParTL <- with(earlies,aggregate(TL,list(BirdID),mean))
@@ -211,8 +188,8 @@ for(i in 1:nrow(ddpar))
 juv <- subset(ddpar,Age<1)
 adults <- droplevels(subset(dd,Ageclass == 'A'))
 
-mymed <- mean(juv$cenTL,na.rm=T)
-juv$TLF <- ifelse(juv$cenTL > mymed,'Long telomeres','Short telomeres')
+mymed <- mean(juv$TL,na.rm=T)
+juv$TLF <- ifelse(juv$TL > mymed,'Long telomeres','Short telomeres')
 
 
 
@@ -255,7 +232,7 @@ x2 <- merge(adults,x1)
 x2 <- x2[!(duplicated(x2$BirdID)),]
 
 
-x3 <- aggregate(TLKB~BirdID,juv,max)
+x3 <- aggregate(TL~BirdID,juv,max)
 x4 <- merge(x3,juv)
 x4 <- x4[!(duplicated(x4$BirdID)),]
 
@@ -265,10 +242,10 @@ x4 <- x4[x4$BirdID %in% x2$BirdID,]
 x3 <- x3[order(x3$BirdID),]
 x4 <- x4[order(x4$BirdID),]
 
-xx1 <- x4$TLKB-mean(x4$TLKB)
-xx2 <- x2$TLKB-mean(x2$TLKB)          
+xx1 <- x4$TL-mean(x4$TL)
+xx2 <- x2$TL-mean(x2$TL)          
 
-rho <- cor(x4$TLKB,x2$TLKB)
+rho <- cor(x4$TL,x2$TL)
 
 (rho*xx1)-xx2
 
@@ -280,7 +257,6 @@ Loss$TROC <- with(Loss,D/TimeDiff)
 
 
 
-Loss <- subset(subset(Loss,TROC > -0.01),TROC < 0.02)
 Loss <- subset(subset(Loss,TimeDiff<1460),TimeDiff>365)
  
 

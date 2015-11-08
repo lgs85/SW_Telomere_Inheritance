@@ -43,51 +43,69 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 **Adaptive sex ratio allocation is linked to maternal telomere length in the Seychelles warbler**
 
+Lewis G. Spurgin^1,2^,  Hannah, L. Dugdale^3,4^, Kat Bebbington^1^, Eleanor A. Fairfield^1^, Jan Komdeur^3^, Terry Burke^4^ and David S. Richardson^1,5,^.
+
+1. School of Biological Sciences, University of East Anglia, Norwich Research Park, NR4 7TJ, United Kingdom
+2. Department of Zoology, Edward Grey Institute, University of Oxford, Oxford, UK
+3. Groningen Institute for Evolutionary Life Sciences, University of Groningen, Groningen, The Netherlands
+4. Department of Animal and Plant Sciences, University of Sheffield, Sheffield, UK
+5. Nature Seychelles, Roche Caiman, Mahé, Republic of Seychelles
+
 
 
 **Abstract**
 
+Previous research has shown that cooperatively breeding Seychelles warblers (*Acrocephalus sechellensis*) adaptively modify the sex ratio of their offspring, producing an excess of females in good conditions in order to maximise the chance of gaining helpers in their territories. Here we show that offspring sex ratio is related to maternal telomere length in this species. Mothers with longer telomeres produced an excess of daughters, while mothers with short telomeres produced an excess of sons. Furthermore, mothers with longer telomeres had offspring with longer telomeres and lower rates of telomere shortening, suggesting that maternal condition is positively related to offspring condition. Finally,longer maternal telomeres were associated with increased survival to adulthood in offspring, and female offspring had lower survival probabilities than males. Our data show that female birds can adaptively modify offspring sex ratio according to their condition, and that telomeres can provide useful insights into sex ratio evolution.
 
 **Introduction**
 
-Sex ratio adjustment and adaptive evolution
+Evolutionary theory suggests that females should modify the sex ratio of their offspring according to their condition or the quality of their environment, in order to maximise their own fitness [@Trivers1973]. Specifically, Trivers and Willard proposed that mothers in good condition should produce more 
 
-Sex ratio adjustment in birds
+Empirical studies on adaptive sex ratio modification have generated mixed results, with some studies
 
 Telomeres as biomarkers of cost/condition
 
-The Seychelles warbler (*Acrocephalus sechellensis*) constitutes a textbook example of adaptive sex ratio modification [@Komdeur1996; @Komdeur1997]. The Seychelles warbler is a facultative cooperative breeder - in good environmental conditions, daughters often remain on their natal territory to help rear their siblings.
+In this study we test the hypothesis that parental telomere length is related to offspring sex ratio in the Seychelles warbler(*Acrocephalus sechellensis*). This species constitutes a textbook example of adaptive sex ratio modification [@Komdeur1997; @Frank 1998]. The Seychelles warbler is a facultative cooperative breeder - in good environmental conditions, daughters often remain on their natal territory to help rear their siblings.
 
-In this study we combine telomere data with the long-term Seychelles warbler data set to test the hypothesis parental condition is related to offspring sex ratio. Specifically, we test the hypothesis that mothers and fathers with longer telomeres produce more females.
+Specifically, we test the hypothesis that mothers longer telomeres produce more females. We then then test whether longer telomeres in mothers is related to offspring telomere length and survival.
 
 
 
 
 ```{r models,include = F}
 
-
 #Sex ratio and parental adult TL
 sr_LmumTL <- glmer(SexEstimate ~  LmumTL + mumage + Fledged + TQ + Helper + (1|mother) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
 sr_LdadTL <- glmer(SexEstimate ~ LdadTL  + dadage + Fledged + TQ + Helper + (1|father) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
 
-#Juvenile TL and parental adult TL
-juvTL_LdadTL <- lmer(cenTL~LdadTL + Fledged + Tarsus + Helper + (1|father) + (1|LayYear),data = juv,na.action=na.exclude)
-juvTL_LmumTL <- lmer(cenTL~LmumTL + Fledged + Tarsus + Helper + (1|mother) + (1|LayYear),data = juv,na.action=na.exclude)
+juv2 <- subset(juv,EPP == 'Within pair')
 
-r_Lmum <- lm(LmumTL~TL,data=subset(juv,EPP == 'Within pair'),na.action=na.exclude)
-r_Ldad <- lm(LdadTL~TL,data=juv,na.action=na.exclude)
+#Juvenile TL and parental adult TL
+juvTL_LdadTL <- lmer(TL~LdadTL + Fledged + Tarsus + Helper + (1|father) + (1|LayYear),data = juv2,na.action=na.exclude)
+juvTL_LmumTL <- lmer(TL~LmumTL + Fledged + Tarsus + Helper +(1|mother) + (1|LayYear),data = juv2,na.action=na.exclude)
+
+juv3 <- subset(juv2,Fledged == 'Fledglings')
+jsurv <- glm(Lifespan~Sex,data=juv,family = poisson,na.action=na.exclude)
+summary(jsurv)
 
 ```
 
-Overall, sex ratio in our Seychelles warbler dataset did not differ from 50:50 (`r round(mean(juv$SexEstimate,na.rm=T)*100,0)`% of all juveniles were male; binomial test, P = `r round2(binom.test(nrow(subset(juv,Sex == 'Males')),nrow(juv))$p.value)`). There was variation in juvenile sex ratio among years (Fig. 1A); of the `r nrow(ddFig1)` years we observed an excess of males in `r length(which(ddFig1$sr>ddFig1$upperCI))` years, and an excess of females in `r length(which(ddFig1$sr<ddFig1$lowerCI))` year.
+**Results**
 
-Generalised linear mixed models controlling for maternal age, territory quality and availability of helpers showed that offspring sex ratio was significantly related to maternal adult telomere length (estimate = `r getstat(sr_LmumTL, 'LmumTL','est')`, CIs = `r getstat(sr_LmumTL, 'LmumTL','CI')`). Mothers with short telomeres (<4kb) as adults produced on `r round(mean(subset(juv,LmumTL<4000)$SexEstimate)*100,0)`% males, while mothers with long telomeres (>7kb) produced `r 100-round(mean(subset(juv,LmumTL>7000)$SexEstimate)*100,0)`% females (Fig. 2A).
+Overall, sex ratio in our Seychelles warbler dataset did not differ from 50:50 (`r round(mean(juv$SexEstimate,na.rm=T)*100,0)`% of all juveniles were male; binomial test, P = `r round2(binom.test(nrow(subset(juv,Sex == 'Males')),nrow(juv))$p.value)`). There was variation in sex ratio among years (Fig. 1A); of the `r nrow(ddFig1)` years we observed an excess of males in `r length(which(ddFig1$sr>ddFig1$upperCI))` years, and an excess of females in `r length(which(ddFig1$sr<ddFig1$lowerCI))` year.
 
-Linear regressions showed that maternal TL was positively related to offspring TL (R^2^ `r getstat(r_Lmum,'TL','R2',standardise = F)`; t = `r getstat(r_Lmum,'TL','t',standardise = F)`; P `r getstat(r_Lmum,'TL','P',standardise = F)`; Fig. 1A ). Paternal TL was not related to offspring TL (R^2^ = `r getstat(r_Ldad,'TL','R2',standardise = F)`; t = `r getstat(r_Ldad,'TL','t',standardise = F)`; P = `r getstat(r_Ldad,'TL','P',standardise = F)`). Mixed models including potentially confounding variables confirmed the results of the linear regressions: offspring TL was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI')`), but was not related to paternal adult TL (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI')`).
+Generalised linear mixed models controlling for maternal age, territory quality and availability of helpers showed that offspring sex ratio was significantly related to maternal adult telomere length (estimate = `r getstat(sr_LmumTL, 'LmumTL','est')`, CIs = `r getstat(sr_LmumTL, 'LmumTL','CI')`; Table S1). Mothers with short telomeres (<4kb) as adults produced on `r round(mean(subset(juv,LmumTL<4000)$SexEstimate)*100,0)`% males, while mothers with long telomeres (>7kb) produced `r 100-round(mean(subset(juv,LmumTL>7000)$SexEstimate)*100,0)`% females (Fig. 1B).We found no evidence that sex ratio was linked to paternal telomere length (estimate = `r getstat(sr_LdadTL, 'LdadTL','est')`, CIs = `r getstat(sr_LdadTL, 'LdadTL','CI')`). 
 
-It is difficult to disentangle the effects of paternal juvenile telomere length and maternal adult telomere length on offspring telomere length, as these two predictor variables are correlated (R = `r round2(with(juv,cor(EdadTL,LmumTL,use='complete.obs')),lessthan=F)`, P = `r round2(with(juv,cor.test(EdadTL,LmumTL,use='complete.obs'))$p.value,lessthan=F)`). Need to think about about why this is the case - seems interesting, and likely environment driven. 
+We then tested whether maternal condition was passed on to offspring by testing for a relaitonship between maternal and offspring telomere length and dynamics. Offspring TL was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI')`; Fig. 2A). Maternal telomere length was also (estimate = `r getstat(mumloss, 'LmumTL','est')`, CIs = `r getstat(mumloss, 'LmumTL','CI')`; Fig. 2A) Paternal telomere length was not related to offspring telomere length (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI')`), nor to telomere loss.
 
-The effects of paternal age and maternal adult telomere length on offspring sex ratio are almost certainly independent, as these two variables are notcorrelated with one another (R = `r round2(with(juv,cor(dadage,LmumTL,use='complete.obs')),lessthan=F)`, P = `r round2(with(juv,cor.test(dadage,LmumTL,use='complete.obs'))$p.value,lessthan=F)`).
+CIs = `r getstat(jsurv, "z.LmumTL:c.Sex","CI")`)
+
+
+**Discussion**
+
+Whether telomeres play a causal role in senescence remains debated [@Simons2015].
+
+
 
 **Methods**
 
@@ -109,6 +127,11 @@ We next tested whether parental age at hatching and parental lifespan were relat
 Finally, we used generalized linear mixed effects models (GLMMs) with a binomial error structure to test how parental TL is related to offspring sex ratio. Offspring sex was included as a binary response variable, offspring age class as a fixed factor, and territory quality and the number of helpers were included as covariates, as both of these variables have been previously demonstrated to predict offspring sex ratio [@Komdeur1997]. Random effects were specified as with the LMMs, above. As with the LMMs, we ran four separate GLMMs, separately testing how parental juvenile TL, parental adult TL, parental age and parental lifespan were related to offspring sex.
 
 
+
 **Acknowledgements**
+We thank Nature Seychelles for facilitating the long-term Seychelles warbler project. The Seychelles Bureau of Standards and Department of Environment gave permission for sampling and fieldwork. We thank Emma Barrett for her work on this project, everyone who has helped in the field, and the current Seychelles warbler research group for useful discussions. This work was funded by two Natural Environment Research Council (NERC) grants to DSR (NE/F02083X/1 and NE/K005502/1). LGS is supported by an Edward Grey Instiute Fellowship, and HLD was funded by a NERC fellowship.
+
+
+
 
 **References**

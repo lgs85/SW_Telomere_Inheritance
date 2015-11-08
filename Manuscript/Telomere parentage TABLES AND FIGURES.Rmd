@@ -75,6 +75,8 @@ multiplot(Fig1A,Fig1B)
 
 ```{r Figure2}
 
+juv2 <- subset(juv,Fledged == 'Fledglings')
+
 Fig2A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
   geom_point() +
   stat_smooth(method=lm) +
@@ -83,7 +85,7 @@ Fig2A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
   theme_lgs() +
   annotate(geom = 'text',x = 1000,y = 12000,label = 'A')
 
-Fig2B <- ggplot(juv,aes(x = LmumTL,y = SurvivedNext,col = Sex,fill=Sex)) +
+Fig2B <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL,y = SurvivedNext,col = Sex,fill=Sex)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T,fullrange=T) +
   xlab('Maternal telomere length (bp)') +
@@ -94,27 +96,3 @@ Fig2B <- ggplot(juv,aes(x = LmumTL,y = SurvivedNext,col = Sex,fill=Sex)) +
 multiplot(Fig2A,Fig2B)
 
 ```
-
-
-ddFig1$Insect <- NA
-ddFig1$TL <- NA
-
-TLmean <- tapply(adults$TL,adults$CatchYear,mean,na.rm=T)
-
-for(i in 1:nrow(ddFig1))
-{
-if(ddFig1$Year[i] %in% names(iyear)) ddFig1$Insect[i] <- iyear[names(iyear) == ddFig1$Year[i]]
-
-if(ddFig1$Year[i] %in% names(TLmean)) ddFig1$TL[i] <- TLmean[names(TLmean) == ddFig1$Year[i]]
-}
-
-
-
-ggplot(ddFig1,aes(x = Insect,y = sr)) +
-geom_point() + theme_lgs() +
-stat_smooth(method = 'lm') +
-ylab('Proportion males')
-
-
-plot(LmumTL~Insect,data=juv)
-
