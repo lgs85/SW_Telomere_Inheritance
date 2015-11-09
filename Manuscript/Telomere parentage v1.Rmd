@@ -86,10 +86,13 @@ juv2 <- subset(juv,EPP == 'Within pair')
 
 #Juvenile TL and parental adult TL
 juvTL_LdadTL <- lmer(TL~LdadTL + Fledged + Tarsus + Helper + (1|father) + (1|LayYear),data = juv2,na.action=na.exclude)
-juvTL_LmumTL <- lmer(TL~LmumTL + Fledged + Tarsus + Helper +(1|mother) + (1|LayYear),data = juv2,na.action=na.exclude)
+juvTL_LmumTL <- lmer(TL~LmumTL+Sex + Fledged + Tarsus + Helper +(1|mother) + (1|LayYear),data = juv2,na.action=na.exclude)
+juvmumTLR <- lm(TL~LmumTL,data=juv2,na.action = na.exclude)
 
-juv3 <- subset(juv2,Fledged == 'Fledglings')
+
 jsurv <- glm(SurvivedNext~Sex+LmumTL,data=juv,family = binomial,na.action=na.exclude)
+jsurvSex <- glm(SurvivedNext~Sex,data=juv,family = binomial,na.action=na.exclude)
+
 
 ```
 
@@ -99,8 +102,9 @@ Overall, sex ratio in our Seychelles warbler dataset did not differ from 50:50 (
 
 Generalised linear mixed models controlling for maternal age, territory quality and availability of helpers showed that offspring sex ratio was significantly related to maternal adult telomere length (estimate = `r getstat(sr_LmumTL, 'LmumTL','est')`, CIs = `r getstat(sr_LmumTL, 'LmumTL','CI')`; Table S1). Mothers with short telomeres (<4kb) as adults produced on `r round(mean(subset(juv,LmumTL<4000)$SexEstimate)*100,0)`% males, while mothers with long telomeres (>7kb) produced `r 100-round(mean(subset(juv,LmumTL>7000)$SexEstimate)*100,0)`% females (Fig. 1B).We found no evidence that sex ratio was linked to paternal telomere length (estimate = `r getstat(sr_LdadTL, 'LdadTL','est')`, CIs = `r getstat(sr_LdadTL, 'LdadTL','CI')`). 
 
-We then tested whether maternal condition was passed on to offspring by testing for a relaitonship between maternal and offspring telomere length and dynamics. Offspring TL was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI')`; Fig. 2A). Paternal telomere length was not related to offspring telomere length (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI')`), nor to telomere loss.
+We then tested whether maternal condition was passed on to offspring by testing for a relaitonship between maternal and offspring telomere length and dynamics. Offspring TL was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI')`; Fig. 2A). A linear regression showed that maternal telomere length explains a modest amount of variation in offspring telomere length (R^2^ = `r getstat(juvmumTLR, 'LmumTL','R2')`), with a heritability of `r round2(2*as.numeric(getstat(juvmumTLR, 'LmumTL','est',standardise = F)))`. Paternal telomere length was not related to offspring telomere length (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI')`).
 
+Finally, we tested how maternal telomere length 
 
 **Discussion**
 

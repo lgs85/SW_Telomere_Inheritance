@@ -244,7 +244,7 @@ theme_lgs <- function(addlegend=FALSE)
           axis.title.x = element_text(size = 16),
           legend.position = if(addlegend == TRUE) c(0.9,0.9) else "none",
           legend.title = element_blank(),
-          legend.text = element_text(size = 15))
+          legend.text = element_text(size = 14))
 }
 
 
@@ -498,12 +498,18 @@ getstat <- function(model,variable,stat,standardise = T)
           if(stat == 'P')
           {
             return(round2(summary(model)$coef[variable,'Pr(>|t|)']))
-          } else stop('you need to add this stat to the function')
+          } else 
+            {
+              if(stat == 'est')
+              {
+                return(round2(summary(model)$coef[variable,'Estimate']))
+              } else stop('you need to add this stat to the function')
+            }
         }
-      }
-    } else stop('you need to add this type of model to the function')
+        }
+      } else stop('you need to add this type of model to the function')
+    }
   }
-}
 
 
 

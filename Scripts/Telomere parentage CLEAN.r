@@ -287,3 +287,5 @@ for(i in 1:length(sr))
 }
 
 ddFig1 <- data.frame(Year = as.numeric(names(sr)),sr,upperCI,lowerCI,row.names = NULL)
+
+juv2 <- subset(juv,EPP == 'Within pair')

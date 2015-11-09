@@ -17,15 +17,12 @@ opts_knit$set(root.dir = '..')
 opts_chunk$set(echo=FALSE,
                warning=FALSE,
                message=FALSE,
-               fig.path='../Figures/',
-               fig.width= 4,
-               fig.height= 8,
-               fig.show='asis',
-               dev='png')
+               include = FALSE,
+               fig.show = 'hide')
 
 ```
 
-```{r load and clean, include = F}
+```{r load and clean}
 
 #Load and clean data
 source('Scripts/Telomere parentage LOAD.r')
@@ -38,17 +35,13 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 **Tables and Figures**
 
-**Figure 1** Parental effects on offspring telomere length in the Seychelles warbler. **A** Offspring telomere length in telation to maternal adult telomere length, measured as the mean value of telomere measurements estimated from all samples taken each mother at age $\geq$ 1. **B** Offspring telomere length in relation to paternal juvenile telomere length, which is the mean value of all samples taken from each father as a juvenile (i.e. aged < 1). Lines and shaded areas represent estimates and 95% confidence limits from a linear regression. TL = telomere length.
-
-**Figure 2** Parental effects on offspring sex ratio in the Seychelles warbler. Offspring sex ratio in relation to maternal **A** adult telomere length (see Fig. 1 and main text) and **B** paternal age. Individual points represent individual male (top) and female (bottom) offspring, and points are plotted with transparency so that overlap can be observed (i.e. darker points represent multiple, overlapping individuals). Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression. TL = telomere length.
-
-
-PAGEBREAK
+**Figure 1** Juvenile sex ratio in the Seychelles warbler. **A** Sex ratio over time in juveniles. The dotted lines represent 95% confidence limits from simulated sex ratio data based on temporal variation in sample size. **B** Offspring sex ratio in relation to maternal telomere length. Individual points represent individual male (top) and female (bottom) offspring, and points are plotted with transparency so that overlap can be observed (i.e. darker points represent multiple, overlapping individuals). Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression. TL = telomere length.
 
 
 
+**Figure 1** Maternal telomere length and offspring condition and survival in the Seychelles warbler. **A** Offspring telomere length in telation to maternal telomere length. **B** Offspring survival to adulthood in relation to maternal telomere length. Lines and shaded areas represent estimates and 95% confidence limits from a logistic regression (**A**) linear regression (**B**).
 
-**Figure 1**
+
 
 ```{r Figure1}
 
@@ -61,7 +54,7 @@ Fig1A <- ggplot(ddFig1,aes(x = Year, y = sr)) +
   ylab('Proportion male offspring') +  
   annotate(geom = 'text',x = 1990,y = 1,label = 'A')
 
-Fig1B <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL,y = SexEstimate)) +
+Fig1B <- ggplot(juv,aes(x = LmumTL,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal telomere length (bp)') +
@@ -69,15 +62,19 @@ Fig1B <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL,y = SexEstimate)
   theme_lgs() +
   annotate(geom = 'text',x = 1000,y = 1,label = 'B')
 
+pdf('Figures/Figure 1.pdf',
+    paper = 'a4',
+    width = 4,
+    height = 8)
 multiplot(Fig1A,Fig1B)
+dev.off()
 
 ```
 
 ```{r Figure2}
 
-juv2 <- subset(juv,Fledged == 'Fledglings')
 
-Fig2A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
+Fig2A <- ggplot(juv,aes(x = LmumTL, y = TL)) +
   geom_point() +
   stat_smooth(method=lm) +
   xlab('Maternal telomere length (bp)') +
@@ -85,7 +82,7 @@ Fig2A <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL, y = TL)) +
   theme_lgs() +
   annotate(geom = 'text',x = 1000,y = 12000,label = 'A')
 
-Fig2B <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL,y = SurvivedNext,col = Sex,fill=Sex)) +
+Fig2B <- ggplot(juv,aes(x = LmumTL,y = SurvivedNext,col = Sex,fill=Sex)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T,fullrange=T) +
   xlab('Maternal telomere length (bp)') +
@@ -93,6 +90,10 @@ Fig2B <- ggplot(subset(juv,EPP == 'Within pair'),aes(x = LmumTL,y = SurvivedNext
   theme_lgs() +
   annotate(geom = 'text',x = 1000,y = 1,label = 'B')
 
+pdf('Figures/Figure 2.pdf',
+    paper = 'a4',
+    width = 4,
+    height = 8)
 multiplot(Fig2A,Fig2B)
-
+dev.off()
 ```
