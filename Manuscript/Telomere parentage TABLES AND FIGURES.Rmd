@@ -74,7 +74,7 @@ dev.off()
 ```{r Figure2}
 
 
-Fig2A <- ggplot(juv,aes(x = LmumTL, y = TL)) +
+Fig2A <- ggplot(juv2,aes(x = LmumTL, y = TL)) +
   geom_point() +
   stat_smooth(method=lm) +
   xlab('Maternal telomere length (bp)') +
