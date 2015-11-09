@@ -464,6 +464,7 @@ getstat <- function(model,variable,stat,standardise = T)
   if(standardise == T) model <- standardize(model)
   modelterms <- rownames(summary(model)$coefficients)
   if(paste('z.',variable,sep='') %in% modelterms) variable <- paste('z.',variable,sep='')
+  if(paste('c.',variable,sep='') %in% modelterms) variable <- paste('c.',variable,sep='')
   
   if(class(model) %in% c('lmerMod','glmerMod'))
   {

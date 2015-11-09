@@ -39,7 +39,7 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 
 
-**Figure 1** Maternal telomere length and offspring condition and survival in the Seychelles warbler. **A** Offspring telomere length in telation to maternal telomere length. **B** Offspring survival to adulthood in relation to maternal telomere length. Lines and shaded areas represent estimates and 95% confidence limits from a logistic regression (**A**) linear regression (**B**).
+**Figure 2** Maternal telomere length and offspring condition and survival in the Seychelles warbler. **A** Offspring telomere length in telation to maternal telomere length. **B** Offspring survival to adulthood in relation to maternal telomere length. Lines and shaded areas represent estimates and 95% confidence limits from a linear regression (**A**) and logistic regression (**B**).
 
 
 

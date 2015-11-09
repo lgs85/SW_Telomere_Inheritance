@@ -90,10 +90,11 @@ juvTL_LmumTL <- lmer(TL~LmumTL+Sex + Fledged + Tarsus + Helper +(1|mother) + (1|
 juvmumTLR <- lm(TL~LmumTL,data=juv2,na.action = na.exclude)
 
 
-jsurv <- glm(SurvivedNext~Sex+LmumTL,data=juv,family = binomial,na.action=na.exclude)
-jsurvSex <- glm(SurvivedNext~Sex,data=juv,family = binomial,na.action=na.exclude)
+jsurv <- glmer(SurvivedNext~SexEstimate+LmumTL+TL+(1|LayYear),data=juv,family = binomial,na.action=na.exclude)
+jsurvSex <- glmer(SurvivedNext~SexEstimate + (1|mother) + (1|LayYear),data=juv,family = binomial,na.action=na.exclude)
+jsurvTL <- glmer(SurvivedNext~LmumTL+(1|mother) + (1|LayYear),data=juv,family = binomial,na.action=na.exclude)
 
-
+summary(jsurv)
 ```
 
 **Results**
@@ -104,7 +105,7 @@ Generalised linear mixed models controlling for maternal age, territory quality 
 
 We then tested whether maternal condition was passed on to offspring by testing for a relaitonship between maternal and offspring telomere length and dynamics. Offspring TL was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI')`; Fig. 2A). A linear regression showed that maternal telomere length explains a modest amount of variation in offspring telomere length (R^2^ = `r getstat(juvmumTLR, 'LmumTL','R2')`), with a heritability of `r round2(2*as.numeric(getstat(juvmumTLR, 'LmumTL','est',standardise = F)))`. Paternal telomere length was not related to offspring telomere length (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI')`).
 
-Finally, we tested how maternal telomere length 
+Finally, we tested how maternal telomere length was related to juvenile survival. Considered seperately, neither maternal telomere length nor sex were related to juvenile survival (maternal telomere length: est = `r getstat(jsurvTL, 'LmumTL', 'est')`; CI = `r getstat(jsurvTL, 'LmumTL', 'CI')`; sex: est = `r getstat(jsurvSex, 'SexEstimate', 'est')`; CI = `r getstat(jsurvSex, 'SexEstimate', 'CI')`. However, when maternal telomere length and offspring sex were included together in a model, there was a significant difference in survival between male and female offspring (est = `r getstat(jsurv, 'SexEstimate', 'est')`; CI = `r getstat(jsurv, 'SexEstimate', 'CI')`), with a higher survival rate in male offspring (Fig. 2B). The main effect  of maternal telomere length on offspring survival remained non-significant when sex was included in the model (est = `r getstat(jsurv, 'LmumTL', 'est')`; CI = `r getstat(jsurv, 'LmumTL', 'CI')`).
 
 **Discussion**
 
@@ -119,21 +120,21 @@ They Seychelles warbler is blah blah blah
 
 *Molecular methods*
 
-DNA is extracted from all blood samples using an ammonium-acetate-based protocol [@Richardson2001], and sex is determined using by PCR [@Griffiths1998]. All samples were genotyped at 30 polymorphic microsatellite loci arranged into four multiplex reactions [see @Spurgin2014a for details]. Telomeres were measured from a total of `r nrow(dd)` samples. Of these, `r nrow(juv)` were from juvenile birds for which we had parentage data with telomere length measurements available from at least one parent. We measured absolute telomere length using a qPCR method with absolute standards [full details provided in @Barrett2012].
+DNA is extracted from all blood samples using an ammonium-acetate-based protocol [@Richardson2000], and sex is determined using by PCR [@Griffiths1998]. All samples were genotyped at 30 polymorphic microsatellite loci arranged into four multiplex reactions [see @Spurgin2014a for details]. Telomeres were measured from a total of `r nrow(dd)` samples. Of these, `r nrow(juv)` were from juvenile birds for which we had parentage data with telomere length measurements available from at least one parent. We measured absolute telomere length using a qPCR method with absolute standards [full details provided in @Barrett2012].
 
 *Statistical analyses*
 
 All statitical analyses were carried out using `r substr(R.version.string,1,15)` [@RDevelopmentCoreTeam2011]. Parentage was assigned using MasterBayes (HANNAH TO DO).
 
-We used linear mixed effects models (LMMs) to test for a relationship between parental and offspring TL. Juvenile TL was entered as the response variable, age class as a fixed factor, and as covariates we included maternal and paternal TL, seasonal food availability, territory quality and the number of helpers present in the natal territory. As our dataset spanned many years, and contained multiple juveniles from the same parents, we included birth year, maternal ID and paternal ID as random factors. In order to differentiate between parental quality and parental condition, we partitioned parental TL into 'juvenile parental TL' and 'adult parental TL', and a separate model for each. Juvenile TL is expected to reflect inheritance, whereas adult TL is expected to reflect the stresses encountered over their adult life, and is thus a marker of condition. Because juvenile and adult parental TL are correlated, we ran separate models for these two variables, keep all other variables the same.
+We used generalized linear mixed effects models (GLMMs) with a binomial error structure to test how parental TL is related to offspring sex ratio. Offspring sex was included as a binary response variable, offspring age class as a fixed factor, and territory quality and the number of helpers were included as covariates, as both of these variables have been previously demonstrated to predict offspring sex ratio [@Komdeur1997]. We also included parental age as a covariate to control for potential confounding effects of senescnece on offspring sex ratio. As our dataset spanned many years, and contained multiple juveniles from the same parents, we included birth year, maternal ID and paternal ID as random factors.
 
-We next tested whether parental age at hatching and parental lifespan were related to offspring TL, again using LMMs. While parental lifespan is likely to be an indicator of individual quality, parental age may reflect condition. These models were constructed as above, but with parental age and parental lifespan added as covariates in place of parental TL. We ran these models separately from the models including parental TL due to collinearity issues between TL, age and lifespan [@Barrett2012; Spurgin *et al.* Submitted]; thus, in total we ran four separate LMMs (parental juvenile TL, parental adult TL, parental age and parental lifespan).
+We used linear mixed effects models (LMMs) to test for a relationship between parental and offspring TL. Juvenile TL was entered as the response variable, age class as a fixed factor, and as covariates we included maternal and paternal TL, maternal and paternal age, seasonal food availability, territory quality and the number of helpers present in the natal territory. Random effects were specified as with the GLMMs, above.
 
-Finally, we used generalized linear mixed effects models (GLMMs) with a binomial error structure to test how parental TL is related to offspring sex ratio. Offspring sex was included as a binary response variable, offspring age class as a fixed factor, and territory quality and the number of helpers were included as covariates, as both of these variables have been previously demonstrated to predict offspring sex ratio [@Komdeur1997]. Random effects were specified as with the LMMs, above. As with the LMMs, we ran four separate GLMMs, separately testing how parental juvenile TL, parental adult TL, parental age and parental lifespan were related to offspring sex.
-
+Finally, we used GLMMs to test whether parental telomere length was related to survival to adulthood. Survial to adulthood (yes/no) was included as the response variable, and parental telomere length, offspring telomere length and offspring sex were included as covariates. Random effects were specified as above.
 
 
 **Acknowledgements**
+
 We thank Nature Seychelles for facilitating the long-term Seychelles warbler project. The Seychelles Bureau of Standards and Department of Environment gave permission for sampling and fieldwork. We thank Emma Barrett for her work on this project, everyone who has helped in the field, and the current Seychelles warbler research group for useful discussions. This work was funded by two Natural Environment Research Council (NERC) grants to DSR (NE/F02083X/1 and NE/K005502/1). LGS is supported by an Edward Grey Instiute Fellowship, and HLD was funded by a NERC fellowship.
 
 
