@@ -59,13 +59,17 @@ Previous research has shown that cooperatively breeding Seychelles warblers (*Ac
 
 **Introduction**
 
-Evolutionary theory suggests that females should modify the sex ratio of their offspring according to their condition or the quality of their environment, in order to maximise their own fitness [@Trivers1973]. Specifically, Trivers and Willard proposed that mothers in good condition should produce more 
+Evolutionary theory suggests that females should modify the sex ratio of their offspring according to their condition or the quality of their environment [@Trivers1973; @Charnov1981]. In a seminal paper, Trivers and Willard proposed that when maternal condition affects offspring fitness, and when fitness of males is affected more than females, mothers in good condition should produce more sons in order to maximise their own fitness [@Trivers1973]. 
 
-Empirical studies on adaptive sex ratio modification have generated mixed results, with some studies
+Despite years of empirical studies, the relationship between maternal condition and offspring sex ratio is unclear [@Sheldon2004; @Bowers2015].
+
+There are likely a number of reasons for the mixed results among studies of maternal condition and offspring sex ratio. Recent theoretical developments have shown that the strength of a Trivers-Willard effect is expected to vary according to sex differences in life history traits, and that explains some of the disparity between theoretical and empirical sex ratio studies [@Schindler2015]. 
+
+There is also a problem with measuring maternal condition. The majority of studies of maternal condition and offspring sex ratio have used a measure of body condition based on body fat, or a measure of social rank. However, body fat may be related to resource availability, making it a poor measure of condition. Social rank appears to be a better measure of resource availability, but its efficacy as a measure of condition is also expected to vary among species, and in many systems is unmeasurable. 
 
 Telomeres as biomarkers of cost/condition
 
-In this study we test the hypothesis that parental telomere length is related to offspring sex ratio in the Seychelles warbler(*Acrocephalus sechellensis*). This species constitutes a textbook example of adaptive sex ratio modification [@Komdeur1997; @Frank 1998]. The Seychelles warbler is a facultative cooperative breeder - in good environmental conditions, daughters often remain on their natal territory to help rear their siblings.
+In this study we test the hypothesis that parental telomere length is related to offspring sex ratio in the Seychelles warbler(*Acrocephalus sechellensis*). This species constitutes a textbook example of adaptive sex ratio modification [@Komdeur1997; @Frank1998]. The Seychelles warbler is a facultative cooperative breeder - in good environmental conditions, daughters often remain on their natal territory to help rear their siblings.
 
 We first test the hypothesis that mothers with longer telomeres produce more females. We then then test whether longer telomeres in mothers is related to offspring telomere length and survival.
 
@@ -86,7 +90,6 @@ juvTL_LmumTL <- lmer(TL~LmumTL + Fledged + Tarsus + Helper +(1|mother) + (1|LayY
 
 juv3 <- subset(juv2,Fledged == 'Fledglings')
 jsurv <- glm(SurvivedNext~Sex+LmumTL,data=juv,family = binomial,na.action=na.exclude)
-summary(jsurv)
 
 ```
 
@@ -96,9 +99,7 @@ Overall, sex ratio in our Seychelles warbler dataset did not differ from 50:50 (
 
 Generalised linear mixed models controlling for maternal age, territory quality and availability of helpers showed that offspring sex ratio was significantly related to maternal adult telomere length (estimate = `r getstat(sr_LmumTL, 'LmumTL','est')`, CIs = `r getstat(sr_LmumTL, 'LmumTL','CI')`; Table S1). Mothers with short telomeres (<4kb) as adults produced on `r round(mean(subset(juv,LmumTL<4000)$SexEstimate)*100,0)`% males, while mothers with long telomeres (>7kb) produced `r 100-round(mean(subset(juv,LmumTL>7000)$SexEstimate)*100,0)`% females (Fig. 1B).We found no evidence that sex ratio was linked to paternal telomere length (estimate = `r getstat(sr_LdadTL, 'LdadTL','est')`, CIs = `r getstat(sr_LdadTL, 'LdadTL','CI')`). 
 
-We then tested whether maternal condition was passed on to offspring by testing for a relaitonship between maternal and offspring telomere length and dynamics. Offspring TL was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI')`; Fig. 2A). Maternal telomere length was also (estimate = `r getstat(mumloss, 'LmumTL','est')`, CIs = `r getstat(mumloss, 'LmumTL','CI')`; Fig. 2A) Paternal telomere length was not related to offspring telomere length (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI')`), nor to telomere loss.
-
-CIs = `r getstat(jsurv, "z.LmumTL:c.Sex","CI")`)
+We then tested whether maternal condition was passed on to offspring by testing for a relaitonship between maternal and offspring telomere length and dynamics. Offspring TL was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI')`; Fig. 2A). Paternal telomere length was not related to offspring telomere length (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI')`), nor to telomere loss.
 
 
 **Discussion**
