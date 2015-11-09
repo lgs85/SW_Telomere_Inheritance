@@ -40,7 +40,7 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 
 
-**Table S1** Generalised linear mixed model output for analysis of parental condition on offspring sex ratio.
+**Table S1** Generalised linear mixed model output for analysis of parental condition on offspring sex ratio. We report...
 
 ```{r Table S1}
 
