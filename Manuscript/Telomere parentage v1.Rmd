@@ -78,34 +78,43 @@ We first test the hypothesis that mothers with longer telomeres produce more fem
 
 ```{r models,include = F}
 
-#Sex ratio and parental adult TL
-sr_LmumTL <- glmer(SexEstimate ~  LmumTL + mumage + Fledged + TQ + Helper + (1|mother) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
-sr_LdadTL <- glmer(SexEstimate ~ LdadTL  + dadage + Fledged + TQ + Helper + (1|father) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
-
 juv2 <- subset(juv,EPP == 'Within pair')
+
+juv2$TL <- log(juv2$TL)
+juv2$LmumTL <- log(juv2$LmumTL)
+juv2$LdadTL <- log(juv2$LdadTL)
+
+
+#Sex ratio and parental adult TL
+sr_LmumTL <- glmer(SexEstimate ~  LmumTL + mumage + Fledged + TQ + Helper + (1|mother) + (1|LayYear),data = juv2,family = 'binomial',na.action=na.exclude)
+sr_LdadTL <- glmer(SexEstimate ~ LdadTL  + dadage + Fledged + TQ + Helper + (1|father) + (1|LayYear),data = juv2,family = 'binomial',na.action=na.exclude)
+
+
 
 #Juvenile TL and parental adult TL
 juvTL_LdadTL <- lmer(TL~LdadTL + Fledged + Tarsus + Helper + (1|father) + (1|LayYear),data = juv2,na.action=na.exclude)
 juvTL_LmumTL <- lmer(TL~LmumTL+Sex + Fledged + Tarsus + Helper +(1|mother) + (1|LayYear),data = juv2,na.action=na.exclude)
 juvmumTLR <- lm(TL~LmumTL,data=juv2,na.action = na.exclude)
 
+#TL and sex-specific survival to adulthood
+jsurv <- glmer(SurvivedNext~SexEstimate*TL+(1|LayYear),data=juv2,family = binomial,na.action=na.exclude)
+fsurv <- glmer(SurvivedNext~TL+(1|LayYear),data=subset(juv2, Sex == 'Females'),family = binomial,na.action=na.exclude)
+msurv <- glmer(SurvivedNext~TL+(1|LayYear),data=subset(juv2, Sex == 'Males'),family = binomial,na.action=na.exclude)
 
-jsurv <- glmer(SurvivedNext~SexEstimate+LmumTL+TL+(1|LayYear),data=juv,family = binomial,na.action=na.exclude)
-jsurvSex <- glmer(SurvivedNext~SexEstimate + (1|mother) + (1|LayYear),data=juv,family = binomial,na.action=na.exclude)
-jsurvTL <- glmer(SurvivedNext~LmumTL+(1|mother) + (1|LayYear),data=juv,family = binomial,na.action=na.exclude)
+jsurvTL <- glmer(SurvivedNext~TL+(1|LayYear),data=juv2,family = binomial,na.action=na.exclude)
+jsurvSex <- glmer(SurvivedNext~SexEstimate+(1|LayYear),data=juv2,family = binomial,na.action=na.exclude)
 
-summary(jsurv)
 ```
 
 **Results**
 
 Overall, sex ratio in our Seychelles warbler dataset did not differ from 50:50 (`r round(mean(juv$SexEstimate,na.rm=T)*100,0)`% of all juveniles were male; binomial test, P = `r round2(binom.test(nrow(subset(juv,Sex == 'Males')),nrow(juv))$p.value)`). There was variation in sex ratio among years (Fig. 1A); of the `r nrow(ddFig1)` years we observed an excess of males in `r length(which(ddFig1$sr>ddFig1$upperCI))` years, and an excess of females in `r length(which(ddFig1$sr<ddFig1$lowerCI))` year.
 
-Generalised linear mixed models controlling for maternal age, territory quality and availability of helpers showed that offspring sex ratio was significantly related to maternal adult telomere length (estimate = `r getstat(sr_LmumTL, 'LmumTL','est')`, CIs = `r getstat(sr_LmumTL, 'LmumTL','CI')`; Table S1). Mothers with short telomeres (<4kb) as adults produced on `r round(mean(subset(juv,LmumTL<4000)$SexEstimate)*100,0)`% males, while mothers with long telomeres (>7kb) produced `r 100-round(mean(subset(juv,LmumTL>7000)$SexEstimate)*100,0)`% females (Fig. 1B).We found no evidence that sex ratio was linked to paternal telomere length (estimate = `r getstat(sr_LdadTL, 'LdadTL','est')`, CIs = `r getstat(sr_LdadTL, 'LdadTL','CI')`). 
+Generalised linear mixed models controlling for maternal age, territory quality and availability of helpers showed that offspring sex ratio was significantly related to maternal adult telomere length (estimate = `r getstat(sr_LmumTL, 'LmumTL','est',standardise = F)`, CIs = `r getstat(sr_LmumTL, 'LmumTL','CI',standardise = F)`; Table S1). Mothers with short telomeres (<4kb) as adults produced on `r round(mean(subset(juv,LmumTL<4000)$SexEstimate)*100,0)`% males, while mothers with long telomeres (>7kb) produced `r 100-round(mean(subset(juv,LmumTL>7000)$SexEstimate)*100,0)`% females (Fig. 1B).We found no evidence that sex ratio was linked to paternal telomere length (estimate = `r getstat(sr_LdadTL, 'LdadTL','est',standardise = F)`, CIs = `r getstat(sr_LdadTL, 'LdadTL','CI',standardise = F)`). 
 
-We then tested whether maternal condition was passed on to offspring by testing for a relaitonship between maternal and offspring telomere length and dynamics. Offspring TL was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est')`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI')`; Fig. 2A). A linear regression showed that maternal telomere length explains a modest amount of variation in offspring telomere length (R^2^ = `r getstat(juvmumTLR, 'LmumTL','R2')`), with a heritability of `r round2(2*as.numeric(getstat(juvmumTLR, 'LmumTL','est',standardise = F)))`. Paternal telomere length was not related to offspring telomere length (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est')`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI')`).
+We then tested whether maternal condition was passed on to offspring by testing for a relaitonship between maternal and offspring telomere length and dynamics. Offspring TL was positively related to maternal adult TL (estimate = `r getstat(juvTL_LmumTL, 'LmumTL','est',standardise = F)`, CIs = `r getstat(juvTL_LmumTL, 'LmumTL','CI',standardise = F)`; Fig. 2A). A linear regression showed that maternal telomere length explains a modest amount of variation in offspring telomere length (R^2^ = `r getstat(juvmumTLR, 'LmumTL','R2',standardise = F)`), with a heritability of `r round2(2*as.numeric(getstat(juvmumTLR, 'LmumTL','est',standardise = F)))`. Paternal telomere length was not related to offspring telomere length (estimate = `r getstat(juvTL_LdadTL, 'LdadTL','est',standardise = F)`, CIs = `r getstat(juvTL_LdadTL, 'LdadTL','CI',standardise = F)`).
 
-Finally, we tested how maternal telomere length was related to juvenile survival. Considered seperately, neither maternal telomere length nor sex were related to juvenile survival (maternal telomere length: est = `r getstat(jsurvTL, 'LmumTL', 'est')`; CI = `r getstat(jsurvTL, 'LmumTL', 'CI')`; sex: est = `r getstat(jsurvSex, 'SexEstimate', 'est')`; CI = `r getstat(jsurvSex, 'SexEstimate', 'CI')`. However, when maternal telomere length and offspring sex were included together in a model, there was a significant difference in survival between male and female offspring (est = `r getstat(jsurv, 'SexEstimate', 'est')`; CI = `r getstat(jsurv, 'SexEstimate', 'CI')`), with a higher survival rate in male offspring (Fig. 2B). The main effect  of maternal telomere length on offspring survival remained non-significant when sex was included in the model (est = `r getstat(jsurv, 'LmumTL', 'est')`; CI = `r getstat(jsurv, 'LmumTL', 'CI')`).
+Finally, we tested how juvenile telomere length was related to sex-specific survival. Considered seperately, neither telomere length nor sex were related to juvenile survival to adulthood (telomere length: est = `r getstat(jsurvTL, 'TL', 'est',standardise = F)`; CI = `r getstat(jsurvTL, 'TL', 'CI',standardise = F)`; sex: est = `r getstat(jsurvSex, 'SexEstimate', 'est',standardise = F)`; CI = `r getstat(jsurvSex, 'SexEstimate', 'CI',standardise = F)`. However, when telomere length and  sex were included together in a model, the effects of both variables increased notably (telomere length: est = `r getstat(jsurv, 'TL', 'est',standardise = F)`; CI = `r getstat(jsurv, 'TL', 'CI',standardise = F)`; sex: est = `r getstat(jsurv, 'SexEstimate', 'est',standardise = F)`; CI = `r getstat(jsurv, 'SexEstimate', 'CI',standardise = F)`), although both remained marginally non-significant. There was also a marginally non-significant interaction effect between sex and telomere length on survival (est = `r getstat(jsurv, 'SexEstimate:TL', 'est',standardise = F)`; CI = `r getstat(jsurv, 'SexEstimate:TL', 'CI',standardise = F)`). Running a model of telomere length and survival to adulthood separately for each sex revealed a significant positive effect of telomere length on survival for females (est = `r getstat(fsurv, 'TL', 'est',standardise = F)`; CI = `r getstat(fsurv, 'TL', 'CI',standardise = F)`), but no effect for males (est = `r getstat(msurv, 'TL', 'est',standardise = F)`; CI = `r getstat(msurv, 'TL', 'CI',standardise = F)`; Fig. 2B)
 
 **Discussion**
 

@@ -242,9 +242,9 @@ theme_lgs <- function(addlegend=FALSE)
           axis.text.y = element_text(size = 14), 
           axis.title.y = element_text(size = 16,vjust=0.8),
           axis.title.x = element_text(size = 16),
-          legend.position = if(addlegend == TRUE) c(0.9,0.9) else "none",
+          legend.position = if(addlegend == TRUE) c(0.8,0.9) else "none",
           legend.title = element_blank(),
-          legend.text = element_text(size = 14))
+          legend.text = element_text(size = 12))
 }
 
 

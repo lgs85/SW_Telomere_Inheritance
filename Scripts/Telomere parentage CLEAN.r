@@ -43,7 +43,6 @@ dd$RightTarsus <- NULL
 dd$LeftTarsus <- NULL
 
 
-
 # Remove unwanted data/outliers ----------------------------------------------------
 
 
@@ -51,6 +50,8 @@ dd <- droplevels(subset(subset(dd,TL>1000),TL<12000))
 dd <- subset(dd,BodyMass>5)
 dd <- subset(dd,Tarsus>17)
 dd <- subset(dd,LayYear>1992)
+
+dd$Condition <- lm(BodyMass~Tarsus, data = dd,na.action = na.omit)$resid
 
 # Telomere data -----------------------------------------------------------
 
@@ -168,6 +169,11 @@ ParTL <- with(lates,aggregate(TL,list(BirdID),mean))
 colnames(ParTL) <- c('BirdID','TL')
 ddpar$LmumTL <- unlist(lapply(ddpar$mother,findTL))
 ddpar$LdadTL <- unlist(lapply(ddpar$father,findTL))
+
+ParTL<- with(lates,aggregate(Condition,list(BirdID),mean))
+colnames(ParTL) <- c('BirdID','TL')
+ddpar$mumCon <- unlist(lapply(ddpar$mother,findTL))
+ddpar$dadCon <- unlist(lapply(ddpar$father,findTL))
 
 
 for(i in 1:nrow(ddpar))
