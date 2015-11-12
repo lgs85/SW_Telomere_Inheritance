@@ -46,7 +46,7 @@ dd$LeftTarsus <- NULL
 # Remove unwanted data/outliers ----------------------------------------------------
 
 
-dd <- droplevels(subset(subset(dd,TL>1000),TL<12000))
+dd <- droplevels(subset(subset(dd,TL>1000),TL<15000))
 dd <- subset(dd,BodyMass>5)
 dd <- subset(dd,Tarsus>17)
 dd <- subset(dd,LayYear>1992)
@@ -57,6 +57,7 @@ dd$Condition <- lm(BodyMass~Tarsus, data = dd,na.action = na.omit)$resid
 
 mymed <- median(dd$TL)
 dd$TLF <- ifelse(dd$TL>mymed,'Long telomeres','Short telomeres')
+dd$TLKB <- dd$TL/1000
 
 # Age data ----------------------------------------------------------------
 
@@ -187,6 +188,8 @@ for(i in 1:nrow(ddpar))
   ddpar$dadlife[i] <- ifelse(daddata$Died == 1,daddata$Lifespan, NA)
 }
 
+ddpar$LmumTLKB <- ddpar$LmumTL/1000
+
 # Subset juveniles --------------------------------------------------------------
 
 
@@ -295,3 +298,4 @@ for(i in 1:length(sr))
 ddFig1 <- data.frame(Year = as.numeric(names(sr)),sr,upperCI,lowerCI,row.names = NULL)
 
 juv2 <- subset(juv,EPP == 'Within pair')
+

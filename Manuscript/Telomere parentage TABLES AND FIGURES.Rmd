@@ -39,7 +39,7 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 
 
-**Figure 2** Maternal telomere length and offspring condition and survival in the Seychelles warbler. **A** Offspring telomere length in telation to maternal telomere length. **B** Offspring survival to adulthood in relation to maternal telomere length. Lines and shaded areas represent estimates and 95% confidence limits from a linear regression (**A**) and logistic regression (**B**).
+**Figure 2** Maternal telomere length and offspring condition and survival in the Seychelles warbler. **A** Offspring telomere length in telation to maternal telomere length. **B** Offspring survival to adulthood in relation to telomere length. Lines and shaded areas represent estimates and 95% confidence limits from a linear regression (**A**) and logistic regression (**B**).
 
 
 
@@ -54,18 +54,18 @@ Fig1A <- ggplot(ddFig1,aes(x = Year, y = sr)) +
   ylab('Proportion male offspring') +  
   annotate(geom = 'text',x = 1990,y = 1,label = 'A')
 
-Fig1B <- ggplot(juv2,aes(x = LmumTL,y = SexEstimate,col = Fledged)) +
+Fig1B <- ggplot(juv2,aes(x = LmumTLKB,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Maternal telomere length (bp)') +
+  xlab('Maternal telomere length (kb)') +
   ylab('Proportion male offspring') +
   theme_lgs(addlegend = T) +
-  annotate(geom = 'text',x = 1000,y = 1,label = 'B')
+  annotate(geom = 'text',x = 1,y = 1,label = 'B')
 
 pdf('Figures/Figure 1.pdf',
     paper = 'a4',
     width = 4,
-    height = 8)
+    height =8)
 multiplot(Fig1A,Fig1B)
 dev.off()
 
@@ -74,21 +74,21 @@ dev.off()
 ```{r Figure2}
 
 
-Fig2A <- ggplot(juv2,aes(x = LmumTL, y = TL)) +
+Fig2A <- ggplot(juv2,aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex)) +
   geom_point() +
   stat_smooth(method=lm) +
-  xlab('Maternal telomere length (bp)') +
-  ylab('Offspring telomere length (bp)') +
+  xlab('Maternal telomere length (kb)') +
+  ylab('Offspring telomere length (kb)') +
   theme_lgs() +
-  annotate(geom = 'text',x = 1000,y = 12000,label = 'A')
+  annotate(geom = 'text',x = 1,y = 12,label = 'A')
 
-Fig2B <- ggplot(juv2,aes(x = TL,y = SurvivedNext,col = Sex,fill=Sex)) +
+Fig2B <- ggplot(juv2,aes(x = TLKB,y = SurvivedNext,col = Sex,fill=Sex)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T,fullrange=T) +
-  xlab('Telomere length (bp)') +
-  ylab('Probability of survival') +
+  xlab('Telomere length (kb)') +
+  ylab('Prob4bility of survival') +
   theme_lgs() +
-  annotate(geom = 'text',x = 1000,y = 1,label = 'B')
+  annotate(geom = 'text',x = 1,y = 1,label = 'B')
 
 pdf('Figures/Figure 2.pdf',
     paper = 'a4',
@@ -97,3 +97,8 @@ pdf('Figures/Figure 2.pdf',
 multiplot(Fig2A,Fig2B)
 dev.off()
 ```
+
+#Put it all into a nice table
+table2 <- imptable(lmavg,myimp)
+table2 <- signif(table2,2)
+
