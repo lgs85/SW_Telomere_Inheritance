@@ -498,7 +498,13 @@ getstat <- function(model,variable,stat,standardise = T)
           if(stat == 'P')
           {
             return(round2(summary(model)$coef[variable,'Pr(>|t|)']))
-          } else stop('you need to add this stat to the function')
+          } else
+            {
+              if(stat == 'est')
+              {
+                return(round2(summary(model)$coef[variable,'Estimate']))
+              } else stop('you need to add this stat to the function')
+            }
         }
       }
     } else stop('you need to add this type of model to the function')
