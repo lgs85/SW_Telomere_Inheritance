@@ -193,8 +193,8 @@ ddpar$LmumTLKB <- ddpar$LmumTL/1000
 # Subset juveniles --------------------------------------------------------------
 
 
-#juv <- droplevels(subset(ddpar,Ageclass %in% c('CH','FL','OFL','SA')))
-juv <- subset(ddpar,Age<1)
+juv <- droplevels(subset(ddpar,Ageclass %in% c('CH','FL','OFL','SA')))
+#juv <- subset(ddpar,Age<1)
 adults <- droplevels(subset(dd,Ageclass == 'A'))
 
 mymed <- mean(juv$TL,na.rm=T)
@@ -297,5 +297,6 @@ for(i in 1:length(sr))
 
 ddFig1 <- data.frame(Year = as.numeric(names(sr)),sr,upperCI,lowerCI,row.names = NULL)
 
-juv2 <- subset(juv,EPP == 'Within pair')
+FL <- subset(juv,Fledged == 'Fledglings')
+NL <- subset(juv,Fledged == 'Nestlings')
 

@@ -54,51 +54,71 @@ Fig1A <- ggplot(ddFig1,aes(x = Year, y = sr)) +
   ylab('Proportion male offspring') +  
   annotate(geom = 'text',x = 1990,y = 1,label = 'A')
 
-Fig1B <- ggplot(juv2,aes(x = LmumTLKB,y = SexEstimate)) +
+Fig1B <- ggplot(subset(juv,Fledged == 'Nestlings'),aes(x = LmumTLKB,y = SexEstimate)) +
   geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T,col=grey(0.2)) +
   xlab('Maternal telomere length (kb)') +
   ylab('Proportion male offspring') +
   theme_lgs(addlegend = T) +
   annotate(geom = 'text',x = 1,y = 1,label = 'B')
+Fig1C <- ggplot(subset(juv,Fledged == 'Fledglings'),aes(x = LmumTLKB,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T,col=grey(0.2)) +
+  xlab('Maternal telomere length (kb)') +
+  ylab('Proportion male offspring') +
+  theme_lgs(addlegend = T) +
+  annotate(geom = 'text',x = 1,y = 1,label = 'C')
 
 pdf('Figures/Figure 1.pdf',
     paper = 'a4',
-    width = 4,
-    height =8)
-multiplot(Fig1A,Fig1B)
+    width = 7,
+    height =7)
+multiplot(Fig1A,Fig1B,Fig1C,layout=matrix(c(1,1,2,3),2,2,byrow=T))
 dev.off()
 
 ```
 
+
+
+
 ```{r Figure2}
 
 
-Fig2A <- ggplot(juv2,aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex)) +
+Fig2A <- ggplot(subset(juv,Fledged == 'Nestlings'),aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex)) +
   geom_point() +
   stat_smooth(method=lm) +
   xlab('Maternal telomere length (kb)') +
   ylab('Offspring telomere length (kb)') +
   theme_lgs() +
   annotate(geom = 'text',x = 1,y = 12,label = 'A')
+Fig2B <- ggplot(subset(juv,Fledged == 'Fledglings'),aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex)) +
+  geom_point() +
+  stat_smooth(method=lm) +
+  xlab('Maternal telomere length (kb)') +
+  ylab('Offspring telomere length (kb)') +
+  theme_lgs() +
+  annotate(geom = 'text',x = 1,y = 12,label = 'B')
 
-Fig2B <- ggplot(juv2,aes(x = TLKB,y = SurvivedNext,col = Sex,fill=Sex)) +
+
+Fig2C <- ggplot(subset(juv,Fledged == 'Nestlings'),aes(x = TLKB,y = SurvivedNext,col = Sex,fill=Sex)) +
   geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T,fullrange=T) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Telomere length (kb)') +
   ylab('Probability of survival') +
   theme_lgs() +
-  annotate(geom = 'text',x = 1,y = 1,label = 'B')
+  annotate(geom = 'text',x = 1,y = 1,label = 'C')
+Fig2D <- ggplot(subset(juv,Fledged == 'Fledglings'),aes(x = TLKB,y = SurvivedNext,col = Sex,fill=Sex)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Telomere length (kb)') +
+  ylab('Probability of survival') +
+  theme_lgs() +
+  annotate(geom = 'text',x = 1,y = 1,label = 'D')
 
 pdf('Figures/Figure 2.pdf',
     paper = 'a4',
-    width = 4,
-    height = 8)
-multiplot(Fig2A,Fig2B)
+    width = 7,
+    height = 7)
+multiplot(Fig2A,Fig2B,Fig2C,Fig2D,layout = matrix(1:4,2,2,byrow=T))
 dev.off()
 ```
-
-#Put it all into a nice table
-table2 <- imptable(lmavg,myimp)
-table2 <- signif(table2,2)
-
