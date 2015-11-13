@@ -35,11 +35,11 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 **Tables and Figures**
 
-**Figure 1** Juvenile sex ratio in the Seychelles warbler. **A** Sex ratio over time in juveniles. The dotted lines represent 95% confidence limits from simulated sex ratio data based on temporal variation in sample size. **B** Offspring sex ratio in relation to maternal telomere length. Individual points represent individual male (top) and female (bottom) offspring, and points are plotted with transparency so that overlap can be observed (i.e. darker points represent multiple, overlapping individuals). Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression. TL = telomere length.
+**Figure 1** Juvenile sex ratio in the Seychelles warbler. **A** Sex ratio over time in juveniles. The dotted lines represent 95% confidence limits from simulated sex ratio data based on temporal variation in sample size. **B** Offspring sex ratio in relation to maternal telomere length in nestlings, and **C** in fledglings. Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
 
 
 
-**Figure 2** Maternal telomere length and offspring condition and survival in the Seychelles warbler. **A** Offspring telomere length in telation to maternal telomere length. **B** Offspring survival to adulthood in relation to telomere length. Lines and shaded areas represent estimates and 95% confidence limits from a linear regression (**A**) and logistic regression (**B**).
+**Figure 2** Maternal telomere length and offspring condition and survival in the Seychelles warbler.  **A** Offspring telomere length in relation to maternal telomere length in nestlings, and **B** in fledglings. **C** Offspring survival to adulthood in relation to telomere length in nestlings, and **D** in fledglings. Lines and shaded areas represent estimates and 95% confidence limits from a linear regression (**A**) and logistic regression (**B**). Blue = males, red = Females.
 
 
 
