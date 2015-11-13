@@ -86,7 +86,7 @@ Fig2B <- ggplot(juv2,aes(x = TLKB,y = SurvivedNext,col = Sex,fill=Sex)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T,fullrange=T) +
   xlab('Telomere length (kb)') +
-  ylab('Prob4bility of survival') +
+  ylab('Probability of survival') +
   theme_lgs() +
   annotate(geom = 'text',x = 1,y = 1,label = 'B')
 
