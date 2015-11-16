@@ -244,7 +244,7 @@ theme_lgs <- function(addlegend=FALSE)
           axis.title.x = element_text(size = 16),
           legend.position = if(addlegend == TRUE) c(0.9,0.9) else "none",
           legend.title = element_blank(),
-          legend.text = element_text(size = 15))
+          legend.text = element_text(size = 13))
 }
 
 

@@ -136,7 +136,7 @@ for(i in 1:nrow(dd))
   } 
 }
 
-
+dd$TQ <- log(dd$TQ)
 
 
 # Parentage ---------------------------------------------------------------
@@ -157,7 +157,7 @@ ddpar$EPP <- ifelse(is.na(ddpar$father),'Extra pair','Within pair')
 #Get parental telomere lngth from both early and later life
 ddDate <- dd[order(dd$BirdID,dd$CatchDate),]
 earlies <- subset(ddDate,Ageclass!='A')
-lates <- subset(ddDate,Ageclass =='A')
+lates <- ddDate
 
 #Early life parental TL
 ParTL <- with(earlies,aggregate(TL,list(BirdID),mean))
@@ -189,12 +189,12 @@ for(i in 1:nrow(ddpar))
 }
 
 ddpar$LmumTLKB <- ddpar$LmumTL/1000
-
+ddpar$LdadTLKB <- ddpar$LdadTL/1000
+ddpar$parTL <- with(ddpar,(LmumTLKB+LdadTLKB)/2)
 # Subset juveniles --------------------------------------------------------------
 
 
 juv <- droplevels(subset(ddpar,Ageclass %in% c('CH','FL','OFL','SA')))
-#juv <- subset(ddpar,Age<1)
 adults <- droplevels(subset(dd,Ageclass == 'A'))
 
 mymed <- mean(juv$TL,na.rm=T)
@@ -272,6 +272,7 @@ Loss <- subset(subset(Loss,TimeDiff<1460),TimeDiff>365)
 
 
 # Sex ratio by year -------------------------------------------------------
+allcatches <- subset(allcatches,MinOfAgeclass!='CH')
 
 sr <- tapply(allcatches$SexEstimate,allcatches$LayYear,mean,na.rm=T)
 srn <- tapply(allcatches$SexEstimate,allcatches$LayYear,length)

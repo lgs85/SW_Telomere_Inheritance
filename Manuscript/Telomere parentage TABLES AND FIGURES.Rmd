@@ -35,90 +35,118 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 **Tables and Figures**
 
-**Figure 1** Juvenile sex ratio in the Seychelles warbler. **A** Sex ratio over time in juveniles. The dotted lines represent 95% confidence limits from simulated sex ratio data based on temporal variation in sample size. **B** Offspring sex ratio in relation to maternal telomere length in nestlings, and **C** in fledglings. Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
+**Figure 1** Sex ratio over time in Juvenile Seychelles warblers. The dotted and dashed lines represent equal sex ratio and 95% confidence limits from simulated sex ratio data based on temporal variation in sample size, respectively. 
+
+**Figure 2** Parental telomere length and offspring sex ratio in the Seychelles warbler. **A** Maternal and peternal telomere length are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental telomere length (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
+
+**Figure 3** Parental telomere length and offspring condition and survival in the Seychelles warbler.  **A** Offspring telomere length in relation to maternal telomere length, **B** paternal telomere length, and **C** mean parental telomere length. **D** Offspring survival to adulthood in relation to telomere length. Lines and shaded areas represent estimates and 95% confidence limits from linear regressions (**A-C**) and logistic regression (**D**). Blue = males, red = Females.
 
 
-
-**Figure 2** Maternal telomere length and offspring condition and survival in the Seychelles warbler.  **A** Offspring telomere length in relation to maternal telomere length in nestlings, and **B** in fledglings. **C** Offspring survival to adulthood in relation to telomere length in nestlings, and **D** in fledglings. Lines and shaded areas represent estimates and 95% confidence limits from a linear regression (**A**) and logistic regression (**B**). Blue = males, red = Females.
-
-
-
-```{r Figure1}
-
-Fig1A <- ggplot(ddFig1,aes(x = Year, y = sr)) +
+```{r Figure 1}
+Fig1 <- ggplot(ddFig1,aes(x = Year, y = sr)) +
   geom_line() +
   geom_line(aes(y = upperCI),lty = 2) +
   geom_line(aes(y = lowerCI),lty = 2) +
   theme_lgs() +
+  theme(axis.text.x = element_text(angle = 60,hjust=1)) +
   ylim(c(0,1)) +
-  ylab('Proportion male offspring') +  
-  annotate(geom = 'text',x = 1990,y = 1,label = 'A')
-
-Fig1B <- ggplot(subset(juv,Fledged == 'Nestlings'),aes(x = LmumTLKB,y = SexEstimate)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T,col=grey(0.2)) +
-  xlab('Maternal telomere length (kb)') +
-  ylab('Proportion male offspring') +
-  theme_lgs(addlegend = T) +
-  annotate(geom = 'text',x = 1,y = 1,label = 'B')
-Fig1C <- ggplot(subset(juv,Fledged == 'Fledglings'),aes(x = LmumTLKB,y = SexEstimate)) +
-  geom_point(alpha=0.2) +
-  stat_smooth(method = 'glm',family = 'binomial',se=T,col=grey(0.2)) +
-  xlab('Maternal telomere length (kb)') +
-  ylab('Proportion male offspring') +
-  theme_lgs(addlegend = T) +
-  annotate(geom = 'text',x = 1,y = 1,label = 'C')
+  geom_abline(aes(intercept = 0.5,slope = 0),lty=3,col=grey(0.5)) +
+  ylab('Proportion male offspring')
 
 pdf('Figures/Figure 1.pdf',
     paper = 'a4',
-    width = 7,
-    height =7)
-multiplot(Fig1A,Fig1B,Fig1C,layout=matrix(c(1,1,2,3),2,2,byrow=T))
+    width = 3.5,
+    height =3.5)
+Fig1
 dev.off()
+
 
 ```
 
-
-
-
 ```{r Figure2}
 
-
-Fig2A <- ggplot(subset(juv,Fledged == 'Nestlings'),aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex)) +
-  geom_point() +
-  stat_smooth(method=lm) +
-  xlab('Maternal telomere length (kb)') +
-  ylab('Offspring telomere length (kb)') +
-  theme_lgs() +
+Fig2A <- ggplot(FL,aes(x = LdadTLKB,y = LmumTLKB)) +
+  geom_point(alpha=0.2) +
+  xlab('Paternal TL (kb)') +
+  ylab('Maternal TL (kb)') +
+  theme_lgs(addlegend = T) +
   annotate(geom = 'text',x = 1,y = 12,label = 'A')
-Fig2B <- ggplot(subset(juv,Fledged == 'Fledglings'),aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex)) +
-  geom_point() +
-  stat_smooth(method=lm) +
-  xlab('Maternal telomere length (kb)') +
-  ylab('Offspring telomere length (kb)') +
-  theme_lgs() +
-  annotate(geom = 'text',x = 1,y = 12,label = 'B')
 
-
-Fig2C <- ggplot(subset(juv,Fledged == 'Nestlings'),aes(x = TLKB,y = SurvivedNext,col = Sex,fill=Sex)) +
+Fig2B <- ggplot(FL,aes(x = LmumTLKB,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Telomere length (kb)') +
-  ylab('Probability of survival') +
-  theme_lgs() +
+  xlab('Maternal TL (kb)') +
+  ylab('Proportion male offspring') +
+  theme_lgs(addlegend = T) +
+  annotate(geom = 'text',x = 1,y = 1,label = 'B')
+
+Fig2C <- ggplot(FL,aes(x = LdadTLKB,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Paternal TL (kb)') +
+  ylab('Proportion male offspring') +
+  theme_lgs(addlegend = T) +
   annotate(geom = 'text',x = 1,y = 1,label = 'C')
-Fig2D <- ggplot(subset(juv,Fledged == 'Fledglings'),aes(x = TLKB,y = SurvivedNext,col = Sex,fill=Sex)) +
+Fig2D <- ggplot(FL,aes(x = parTL,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Telomere length (kb)') +
-  ylab('Probability of survival') +
-  theme_lgs() +
+  xlab('Mean parental TL (kb)') +
+  ylab('Proportion male offspring') +
+  theme_lgs(addlegend = T) +
   annotate(geom = 'text',x = 1,y = 1,label = 'D')
+
 
 pdf('Figures/Figure 2.pdf',
     paper = 'a4',
     width = 7,
+    height =7)
+multiplot(Fig2A,Fig2B,Fig2C,Fig2D,layout=matrix(c(1,2,3,4),2,2,byrow=T))
+dev.off()
+
+```
+
+
+
+
+```{r Figure3}
+
+
+Fig3A <- ggplot(FL,aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex)) +
+  geom_point() +
+  stat_smooth(method=lm) +
+  xlab('Maternal TL (kb)') +
+  ylab('Offspring TL (kb)') +
+  theme_lgs() +
+  annotate(geom = 'text',x = 1.5,y = 12.5,label = 'A')
+Fig3B <- ggplot(FL,aes(x = LdadTLKB, y = TLKB,col = Sex, fill = Sex)) +
+  geom_point() +
+  stat_smooth(method=lm) +
+  xlab('Paternal TL (kb)') +
+  ylab('Offspring TL (kb)') +
+  theme_lgs() +
+  annotate(geom = 'text',x = 1.5,y = 12.5,label = 'B')
+
+Fig3C <- ggplot(FL,aes(x = parTL, y = TLKB,col = Sex, fill = Sex)) +
+  geom_point() +
+  stat_smooth(method=lm) +
+  xlab('Mean parental TL (kb)') +
+  ylab('Offspring TL (kb)') +
+  theme_lgs() +
+  annotate(geom = 'text',x = 1.5,y = 12.5,label = 'C')
+Fig3D <- ggplot(FL,aes(x = TLKB, y = SurvivedNext,col = Sex, fill = Sex)) +
+  geom_point(alpha= 0.2) +
+  stat_smooth(method=glm, family = binomial) +
+  xlab('Offspring TL (kb)') +
+  ylab('Survival to adulthood') +
+  theme_lgs() +
+  annotate(geom = 'text',x = 1,y = 1,label = 'D')
+
+
+pdf('Figures/Figure 3.pdf',
+    paper = 'a4',
+    width = 7,
     height = 7)
-multiplot(Fig2A,Fig2B,Fig2C,Fig2D,layout = matrix(1:4,2,2,byrow=T))
+multiplot(Fig3A,Fig3B,Fig3C,Fig3D,layout=matrix(1:4,2,2,byrow=T))
 dev.off()
 ```
+

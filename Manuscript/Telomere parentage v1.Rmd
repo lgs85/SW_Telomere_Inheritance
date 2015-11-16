@@ -74,46 +74,30 @@ We first test the hypothesis that mothers with longer telomeres produce more fem
 
 ```{r models,include = F}
 
-FL$TL <- log(FL$TL)
-FL$LmumTL <- log(FL$LmumTL)
-FL$LdadTL <- log(FL$LdadTL)
-
-
-NL$TL <- log(NL$TL)
-NL$LmumTL <- log(NL$LmumTL)
-NL$LdadTL <- log(NL$LdadTL)
-
-
 #Sex ratio and parental adult TL
-sr_NLmumTL <- glmer(SexEstimate ~  LmumTL + mumage + TQ * Helper + (1|mother) + (1|LayYear),data = NL,family = 'binomial',na.action=na.exclude)
-sr_NLdadTL <- glmer(SexEstimate ~ LdadTL  + dadage + TQ + Helper + (1|father) + (1|LayYear),data = NL,family = 'binomial',na.action=na.exclude)
-sr_FLmumTL <- glmer(SexEstimate ~  LmumTL + mumage + TQ * Helper + (1|mother) + (1|LayYear),data = FL,family = 'binomial',na.action=na.exclude)
-sr_FLdadTL <- glmer(SexEstimate ~ LdadTL  + dadage + TQ + Helper + (1|father) + (1|LayYear),data = FL,family = 'binomial',na.action=na.exclude)
-
+sr_FLmumTL <- glmer(SexEstimate ~  LmumTLKB + mumage + Helper + (1|mother) + (1|LayYear),data = FL,family = 'binomial',na.action=na.exclude)
+sr_FLdadTL <- glmer(SexEstimate ~ LdadTLKB + Helper + (1|father),data = FL,family = 'binomial',na.action=na.exclude)
+sr_FLparTL <- glmer(SexEstimate ~ parTL + mumage + dadage + Helper + (1|LayYear),data = FL,family = 'binomial',na.action=na.exclude)
 
 
 #Juvenile TL and parental adult TL
-NLTL_LdadTL <- lmer(TL~LdadTL + Sex + Tarsus + Helper + (1|father) + (1|LayYear),data = NL,na.action=na.exclude)
-NLTL_LmumTL <- lmer(TL~LmumTL + Sex + Tarsus + Helper +(1|mother) + (1|LayYear),data = NL,na.action=na.exclude)
-FLTL_LdadTL <- lmer(TL~LdadTL + Sex + Tarsus + Helper + (1|father) + (1|LayYear),data = FL,na.action=na.exclude)
-FLTL_LmumTL <- lmer(TL~LmumTL + Sex + Tarsus + Helper +(1|mother) + (1|LayYear),data = FL,na.action=na.exclude)
-
-NLmumTLR <- lm(TL~LmumTL,data=NL,na.action = na.exclude)
+FLTL_LdadTL <- lmer(TLKB~LdadTLKB * Sex + (1|father) + (1|LayYear),data = FL,na.action=na.exclude)
+FLTL_LmumTL <- lmer(TLKB~LmumTLKB * Sex +(1|mother) + (1|LayYear),data = FL,na.action=na.exclude)
+FLTL_parTL <- lmer(TLKB~parTL * Sex + (1|mother) + (1|LayYear),data = FL,na.action=na.exclude)
 
 #TL and sex-specific survival to adulthood
-NLsurv <- glmer(SurvivedNext~LmumTL*Sex+(1|LayYear),data=NL,family = binomial,na.action=na.exclude)
-FLsurv <- glmer(SurvivedNext~LmumTL*Sex+(1|LayYear),data=FL,family = binomial,na.action=na.exclude)
+FLsurv <- glmer(SurvivedNext~TLKB*Sex+(1|LayYear),data=FL,family = binomial,na.action=na.exclude)
 ```
 
 **Results**
 
-Overall, sex ratio in our Seychelles warbler dataset did not differ from 50:50 (`r round(mean(juv$SexEstimate,na.rm=T)*100,0)`% of all juveniles were male; binomial test, P = `r round2(binom.test(nrow(subset(juv,Sex == 'Males')),nrow(juv))$p.value)`). There was variation in sex ratio among years (Fig. 1A); of the `r nrow(ddFig1)` years we observed an excess of males in `r length(which(ddFig1$sr>ddFig1$upperCI))` years, and an excess of females in `r length(which(ddFig1$sr<ddFig1$lowerCI))` year.
+Overall, sex ratio in our Seychelles warbler dataset did not differ from 50:50 (`r round(mean(juv$SexEstimate,na.rm=T)*100,0)`% of all juveniles were male; binomial test, P = `r round2(binom.test(nrow(subset(juv,Sex == 'Males')),nrow(juv))$p.value)`). There was variation in sex ratio among years (Fig. 1); of the `r nrow(ddFig1)` years we observed an excess of males in `r length(which(ddFig1$sr>ddFig1$upperCI))` years, and an excess of females in `r length(which(ddFig1$sr<ddFig1$lowerCI))` year.
 
-Generalised linear mixed models controlling for maternal age, territory quality and availability of helpers showed that nestling sex ratio was not related to maternal telomere length (estimate = `r getstat(sr_NLmumTL, 'LmumTL','est',standardise = F)`, CIs = `r getstat(sr_NLmumTL, 'LmumTL','CI',standardise = F)`; Fig. 1B). However, fledgling sex ratio was significantly related to maternal telomere length (estimate = `r getstat(sr_FLmumTL, 'LmumTL','est',standardise = F)`, CIs = `r getstat(sr_FLmumTL, 'LmumTL','CI',standardise = F)`). Mothers with short telomeres (<4kb) as adults produced on `r round(mean(subset(FL,LmumTL<log(4000))$SexEstimate)*100,0)`% males, while mothers with long telomeres (>7kb) produced `r 100-round(mean(subset(FL,LmumTL>log(7000))$SexEstimate)*100,0)`% females (Fig. 1C). We found no evidence that sex ratio was linked to paternal telomere length in nestlings (estimate = `r getstat(sr_NLdadTL, 'LdadTL','est',standardise = F)`, CIs = `r getstat(sr_NLdadTL, 'LdadTL','CI',standardise = F)`),but fathers with longer telomeres also had more female fledglings (estimate = `r getstat(sr_FLdadTL, 'LdadTL','est',standardise = F)`, CIs = `r getstat(sr_FLdadTL, 'LdadTL','CI',standardise = F)`). GET CONDITIONAL R SQUARED FOR MATERNAL VS PATERNAL MODELS We found no effect of territory quality or the number of helpers on offspring sex ratio (Table S1).
+We found no evidence that maternal and paternal quality, measured in terms of telomere length, were related. Generalised linear mixed models controlling for maternal age showed that offspring sex ratio was significantly related to maternal telomere length (Fig. 1B). There was a tendency for fathers with longer telomeres to have more female offspring, although this was not significant (estimate = `r getstat(sr_FLdadTL, 'LdadTLKB','est',standardise = F)`, CIs = `r getstat(sr_FLdadTL, 'LdadTLKB','CI',standardise = F)`; Fig. 1B). Interestingly, average telomere length of both mother and father had the strongest effect on offspring sex ratio (estimate = `r getstat(sr_FLparTL, 'parTL','est',standardise = F)`, CIs = `r getstat(sr_FLparTL, 'parTL','CI',standardise = F)`; Fig. 1D). (estimate = `r getstat(sr_FLmumTL, 'LmumTLKB','est',standardise = F)`, CIs = `r getstat(sr_FLmumTL, 'LmumTLKB','CI',standardise = F)`). Pairs with short telomeres (<4kb) produced on average `r round(mean(subset(FL,parTL<4)$SexEstimate)*100,0)`% males, while pairs with long telomeres (>6kb) produced `r 100-round(mean(subset(FL,parTL>6)$SexEstimate)*100,0)`% females  We found no effect of territory quality or the number of helpers on offspring sex ratio (Table S1).
 
-We then tested whether parental condition was passed on to offspring by testing for a relationship between parental and offspring telomere length and dynamics. Telomere length in nestlings was positively related to maternal telomere length (estimate = `r getstat(NLTL_LmumTL, 'LmumTL','est',standardise = F)`, CIs = `r getstat(NLTL_LmumTL, 'LmumTL','CI',standardise = F)`; Fig. 2A). A linear regression showed that maternal telomere length explains a modest amount of variation in offspring telomere length (R^2^ = `r getstat(NLmumTLR, 'LmumTL','R2',standardise = F)`), with a heritability of `r round2(2*as.numeric(getstat(NLmumTLR, 'LmumTL','est',standardise = F)))`. There was no evidence that telomere length in fledglings was related to maternal telomere length (estimate = `r getstat(FLTL_LmumTL, 'LmumTL','est',standardise = F)`, CIs = `r getstat(FLTL_LmumTL, 'LmumTL','CI',standardise = F)`; Fig. 2B). Paternal telomere length was not related to offspring telomere length in nestlings (estimate = `r getstat(NLTL_LdadTL, 'LdadTL','est',standardise = F)`, CIs = `r getstat(NLTL_LdadTL, 'LdadTL','CI',standardise = F)`), or fledglings (estimate = `r getstat(FLTL_LdadTL, 'LdadTL','est',standardise = F)`, CIs = `r getstat(FLTL_LdadTL, 'LdadTL','CI',standardise = F)`).
+We then tested whether parental condition was passed on to offspring by testing for a relationship between parental and offspring telomere length and dynamics. Offspring telomere length not related to maternal telomere length (estimate = `r getstat(FLTL_LmumTL, 'LmumTLKB','est',standardise = F)`, CIs = `r getstat(FLTL_LmumTL, 'LmumTLKB','CI',standardise = F)`; Fig. 3A), but was positively related to paternal telomere length (estimate = `r getstat(FLTL_LdadTL, 'LdadTLKB','est',standardise = F)`, CIs = `r getstat(FLTL_LdadTL, 'LdadTLKB','CI',standardise = F)`; Fig. 3B). Again, the strongest relationship was found with mean parental telomere length (estimate = `r getstat(FLTL_parTL, 'parTL','est',standardise = F)`, CIs = `r getstat(FLTL_parTL, 'parTL','CI',standardise = F)`; Fig. 3C). The relationship between parental and offpring telomere length was strongest for females (Fig. 3C); however, the interactrion between parental telomere length and sex was not significant (estimate = `r getstat(FLTL_parTL, 'parTL:SexMales','est',standardise = F)`, CIs = `r getstat(FLTL_parTL, 'parTL:SexMales','CI',standardise = F)`; Fig. 3C). 
 
-Finally, we tested how juvenile telomere length in each was related to survival. In nestlings there was no relationship between survival and telomere length (est = `r getstat(NLsurv, 'SexMales', 'est',standardise = F)`; CI = `r getstat(NLsurv, 'SexMales', 'CI',standardise = F)`), and no interaction between sex and telomere length on survival (Fig. 2C). In fledglings, there was a significant interaction effect between sex and telomere length on survival (est = `r getstat(FLsurv, 'LmumTL:SexMales', 'est',standardise = F)`; CI = `r getstat(FLsurv, 'LmumTL:SexMales', 'CI',standardise = F)`). Telomere length in female juveniles was positively related to juvenile survival, while no such relationship was observed in males (Fig. 2D). There was no effect of paternal telomere length on juvenile survivla in nestlings or fledglings.
+Finally, we tested how juvenile telomere length in each was related to survival. Survival was significantly higher in males (est = `r getstat(FLsurv, 'SexMales', 'est',standardise = F)`; CI = `r getstat(FLsurv, 'SexMales', 'CI', standardise = F)`), and positively related to telomere length (est = `r getstat(FLsurv, 'TLKB', 'est',standardise = F)`; CI = `r getstat(FLsurv, 'TLKB', 'CI', standardise = F)`). Importantly, there was a significant interaction effect between sex and telomere length on survival (est = `r getstat(FLsurv, 'TLKB:SexMales', 'est',standardise = F)`; CI = `r getstat(FLsurv, 'TLKB:SexMales', 'CI',standardise = F)`). Telomere length in female juveniles was positively related to juvenile survival, while no such relationship was observed in males (Fig. 3D).
 
 **Discussion**
 
