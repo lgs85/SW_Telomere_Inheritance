@@ -1,7 +1,7 @@
 ---
 output:
   word_document:
-    reference_docx: myref.docx
+    reference_docx: myrefsinglespace.docx
 ---
 
 
@@ -33,6 +33,7 @@ opts_chunk$set(echo=FALSE,
 source('Scripts/Telomere parentage LOAD.r')
 source('Scripts/Telomere parentage FUNCTIONS.r')
 source('Scripts/Telomere parentage CLEAN.r')
+source('Scripts/Telomere parentage MODELS.r')
 
 
 ```
@@ -40,17 +41,121 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 
 
-**Table S1** Generalised linear mixed model output for analysis of parental condition on offspring sex ratio. We report...
+**Table S1** Generalised linear mixed model output for analysis of parental condition on offspring sex ratio. We ran seperate models for mothers, fathers, and the mean telomere length of both parents.
 
 ```{r Table S1}
 
-#Sex ratio and parental adult TL
-sr_LmumTL <- glmer(SexEstimate ~  LmumTL + mumage + Fledged + TQ + Helper + (1|mother) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
-sr_LdadTL <- glmer(SexEstimate ~ LdadTL  + dadage + Fledged + TQ + Helper + (1|father) + (1|LayYear),data = juv,family = 'binomial',na.action=na.exclude)
+Mothers <- rep(' ',4)
+  
+mumtab <- summary(sr_FLmumTL)$coefficients
+mumtab <- rbind(mumtab,summary(sr_FLmumTQ)$coefficients['TQ',,drop=FALSE])
+mumtab <- rbind(mumtab,summary(sr_FLmumTQ)$coefficients['TQ',,drop=FALSE])
+mumtab <- round(mumtab,3)
 
 
+Fathers <- rep(' ',4)
+
+dadtab <- summary(sr_FLdadTL)$coefficients
+dadtab <- rbind(dadtab,summary(sr_FLdadTQ)$coefficients[c('TQ','dadage'),])
+dadtab <- round(dadtab,3)
+
+Combined <- rep(' ',4)
+
+partab <- summary(sr_FLparTL)$coefficients
+partab <- rbind(partab,summary(sr_FLparTQ)$coefficients['TQ',,drop = FALSE])
+partab <- round(partab,3)
+
+TableS1 <- rbind(Mothers,mumtab,Fathers,dadtab,Combined,partab)
+TableS1[TableS1 == '0'] <- '<0.001'
+
+nams <- rownames(TableS1)
+nams[nams == 'LmumTLKB'] <- 'Maternal TL'
+nams[nams == 'mumage'] <- 'Maternal age'
+nams[nams == 'Helper'] <- 'Num. Helpers'
+nams[nams == 'LdadTLKB'] <- 'Paternal TL'
+nams[nams == 'dadage'] <- 'Paternal age'
+nams[nams == 'parTL'] <- 'Parental TL'
+
+rownames(TableS1) <- nams
+colnames(TableS1)[colnames(TableS1) == "Pr(>|z|)"] <- "P"
+
+kable(TableS1)
 
 ```
 
 
+PAGEBREAK
+
+**Table S2** Linear mixed model output showing the relaitonship between parental and offspring telomere length in the Seyhelles warbler. We ran seperate models mor mothers, fathers, and the mean telomere length of both parents.
+
+
+```{r Table S2}
+
+Mothers <- rep(' ',4)
+  
+mumtab <- summary(FLTL_LmumTL)$coefficients
+P <- 2 * (1 - pnorm(abs(mumtab[,'t value'])))
+mumtab <- cbind(mumtab,P)
+mumtab <- round(mumtab,3)
+
+
+Fathers <- rep(' ',4)
+
+dadtab <- summary(FLTL_LdadTL)$coefficients
+P <- 2 * (1 - pnorm(abs(dadtab[,'t value'])))
+dadtab <- cbind(dadtab,P)
+dadtab <- round(dadtab,3)
+
+Combined <- rep(' ',4)
+
+partab <- summary(FLTL_parTL)$coefficients
+P <- 2 * (1 - pnorm(abs(partab[,'t value'])))
+partab <- cbind(partab,P)
+partab <- round(partab,3)
+
+TableS2 <- rbind(Mothers,mumtab,Fathers,dadtab,Combined,partab)
+TableS2[TableS2 == '0'] <- '<0.001'
+
+nams <- rownames(TableS2)
+nams[nams == 'LmumTLKB'] <- 'Maternal TL'
+nams[nams == 'mumage'] <- 'Maternal age'
+nams[nams == 'Helper'] <- 'Num. Helpers'
+nams[nams == 'LdadTLKB'] <- 'Paternal TL'
+nams[nams == 'dadage'] <- 'Paternal age'
+nams[nams == 'parTL'] <- 'Parental TL'
+nams[nams == 'SexMales'] <- 'Sex'
+nams[nams == 'LmumTLKB:SexMales'] <- 'Maternal TL x Sex'
+nams[nams == 'LdadTLKB:SexMales'] <- 'Paternal TL x Sex'
+nams[nams == 'parTL:SexMales'] <- 'Parental TL x Sex'
+
+rownames(TableS2) <- nams
+
+
+kable(TableS2)
+
+```
+
+
+PAGEBREAK
+
+**Table S3** Generalised linear mixed model output showing the effects of telomere length and sex on survival to adulthood in juvneile Seychelles warblers.
+
+```{r Table S3}
+
+
+TableS3 <- summary(FLsurv)$coefficients
+TableS3 <- round(TableS3,3)
+TableS3[TableS3 == '0'] <- '<0.001'
+
+nams <- rownames(TableS3)
+nams[nams == 'TLKB'] <- 'TL'
+nams[nams == 'SexMales'] <- 'Sex'
+nams[nams == 'TLKB:SexMales'] <- 'TL x Sex'
+
+rownames(TableS3) <- nams
+colnames(TableS3)[colnames(TableS3) == "Pr(>|z|)"] <- "P"
+
+kable(TableS3)
+
+```
 

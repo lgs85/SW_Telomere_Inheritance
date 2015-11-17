@@ -34,7 +34,7 @@ opts_chunk$set(echo=FALSE,
 source('Scripts/Telomere parentage LOAD.r')
 source('Scripts/Telomere parentage FUNCTIONS.r')
 source('Scripts/Telomere parentage CLEAN.r')
-
+source('Scripts/Telomere parentage MODELS.r)
 
 ```
 
@@ -100,30 +100,6 @@ Finally, we used GLMMs to test whether parental telomere length was related to s
 
 
 **Results**
-```{r models,include = F}
-
-#Maternal and paternal TL
-cor_mumdad <- with(FL,cor.test(LmumTL,LdadTL))
-
-#Sex ratio and parental adult TL
-sr_FLmumTL <- glmer(SexEstimate ~  LmumTLKB + mumage + Helper + (1|mother) + (1|LayYear),data = FL,family = 'binomial',na.action=na.exclude)
-sr_FLdadTL <- glmer(SexEstimate ~ LdadTLKB + Helper + (1|father),data = FL,family = 'binomial',na.action=na.exclude)
-sr_FLparTL <- glmer(SexEstimate ~ parTL + mumage + dadage + Helper + (1|LayYear),data = FL,family = 'binomial',na.action=na.exclude)
-
-lm_parTLF <- lm(TLKB~parTL,data=subset(FL, Sex == 'Females'),na.action = na.exclude)
-lm_parTLM <- lm(TLKB~parTL,data=subset(FL, Sex == 'Males'),na.action = na.exclude)
-
-#Juvenile TL and parental adult TL
-FLTL_LdadTL <- lmer(TLKB~LdadTLKB * Sex + (1|father) + (1|LayYear),data = FL,na.action=na.exclude)
-FLTL_LmumTL <- lmer(TLKB~LmumTLKB * Sex +(1|mother) + (1|LayYear),data = FL,na.action=na.exclude)
-FLTL_parTL <- lmer(TLKB~parTL * Sex + (1|mother) + (1|LayYear),data = FL,na.action=na.exclude)
-
-#TL and sex-specific survival to adulthood
-FLsurv <- glmer(SurvivedNext~TLKB*Sex+(1|LayYear),data=FL,family = binomial,na.action=na.exclude)
-FLsurvsex <- glmer(SurvivedNext~Sex+(1|LayYear),data=FL,family = binomial,na.action=na.exclude)
-```
-
-
 
 Overall, sex ratio in our Seychelles warbler dataset did not differ from 50:50 (`r round(mean(FL$SexEstimate,na.rm=T)*100,0)`% of all juveniles were male; binomial test, P = `r round2(binom.test(nrow(subset(FL,Sex == 'Males')),nrow(FL))$p.value)`). There was variation in sex ratio among years (Fig. 1); of the `r num2word(nrow(ddFig1),'year')` we observed an excess of males in `r num2word(length(which(ddFig1$sr>ddFig1$upperCI)),'year')`, and an excess of females in `r num2word(length(which(ddFig1$sr<ddFig1$lowerCI)),'year')`.
 
