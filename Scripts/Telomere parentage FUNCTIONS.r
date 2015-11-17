@@ -457,16 +457,45 @@ ggsurv <- function(s, CI = 'def', plot.cens = T, surv.col = 'gg.def',
 
 # In-text functions -------------------------------------------------------
 
+#Word to number
+num2word <- function(x,x.units = 'none',capstart = F)
+{
+  if(x > 9 | x - round(x,0) != 0) 
+    {
+    output <- paste(x)
+  } else
+  {
+    nums <- c(0:9)
+    words <- c('zero','one','two','three','four','five','six','seven','eight','nine')
+    if(capstart == T) words <- c('Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine')
+    output <- words[x == nums]
+  }
+    if(x.units!='none')
+  {
+    if(x == 1)
+    {
+      return(paste(output,x.units))
+    } else
+    {
+      return(paste(output,paste0(x.units,'s')))
+    }
+  } else
+  {
+    return(output)
+  }
+}
 
 #Get statistic from model
 getstat <- function(model,variable,stat,standardise = T)
 {
-  if(standardise == T) model <- standardize(model)
-  modelterms <- rownames(summary(model)$coefficients)
-  if(paste('z.',variable,sep='') %in% modelterms) variable <- paste('z.',variable,sep='')
+  
   
   if(class(model) %in% c('lmerMod','glmerMod'))
   {
+    if(standardise == T) model <- standardize(model)
+    modelterms <- rownames(summary(model)$coefficients)
+    if(paste('z.',variable,sep='') %in% modelterms) variable <- paste('z.',variable,sep='')
+    
     if(stat == 'CI')
     {
       est <- summary(model)$coefficients[variable,'Estimate']
@@ -485,6 +514,10 @@ getstat <- function(model,variable,stat,standardise = T)
   {
     if(class(model) == 'lm')
     {
+      if(standardise == T) model <- standardize(model)
+      modelterms <- rownames(summary(model)$coefficients)
+      if(paste('z.',variable,sep='') %in% modelterms) variable <- paste('z.',variable,sep='')
+      
       if(stat == 'R2')
       {
         return(round2(summary(model)$r.squared))
@@ -507,7 +540,23 @@ getstat <- function(model,variable,stat,standardise = T)
             }
         }
       }
-    } else stop('you need to add this type of model to the function')
+    } else
+      {
+        if(class(model) == 'htest')
+        {
+          if(stat == 'est')
+          {
+            return(round2(model$estimate,lessthan = F))            
+          } else
+          {
+            if(stat == 'CI')
+            {
+              return(paste(round2(model$conf.int[1],lessthan = F),round2(model$conf.int[2], lessthan = F),sep = ', '))
+            } else stop('you need to add this stat to this type of model')
+          }
+
+        } else stop('you need to add this type of model to the function')
+      }
   }
 }
 
