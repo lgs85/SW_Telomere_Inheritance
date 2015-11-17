@@ -8,4 +8,4 @@ The table and figure legends are also in the manuscript folder. They are in a fi
 
 The SOM is not done yet. This will include tables of model outputs.
 
-The figures are in the "Figures" folder. There are only 2.
+The figures are in the "Figures" folder. There are 3.
