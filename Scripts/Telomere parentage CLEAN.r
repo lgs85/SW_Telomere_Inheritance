@@ -52,7 +52,8 @@ dd <- subset(dd,Tarsus>17)
 dd <- subset(dd,LayYear>1992)
 
 dd$Condition <- lm(BodyMass~Tarsus,data=dd)$resid
-
+dd <- subset(dd,Condition > -3)
+dd <- subset(dd,Condition < 3)
 
 # Telomere data -----------------------------------------------------------
 
@@ -70,7 +71,6 @@ dd$Fledged <- ifelse(dd$Ageclass == 'CH','Nestlings',
                      ifelse(dd$Ageclass == 'A','Adults',
                             'Fledglings'))
 dd$Fledged <- factor(dd$Fledged,levels = c('Nestlings','Fledglings','Adults'))
-
 
 # Survival and lifespan ---------------------------------------------------
 
@@ -161,9 +161,11 @@ ddpar$LdadTL <- unlist(lapply(ddpar$father,findTL))
 
 ParTL<- with(ddDate,aggregate(Condition,list(BirdID),mean))
 colnames(ParTL) <- c('BirdID','TL')
-ddpar$mumCon <- unlist(lapply(ddpar$mother,findTL))
-ddpar$dadCon <- unlist(lapply(ddpar$father,findTL))
-
+ddpar$mumcon <- unlist(lapply(ddpar$mother,findTL))
+ddpar$dadcon <- unlist(lapply(ddpar$father,findTL))
+ddpar$parcon <- with(ddpar,(mumcon+dadcon)/2)
+ddpar <- subset(ddpar,mumcon > -2)
+ddpar <- subset(ddpar,mumcon < 2)
 
 for(i in 1:nrow(ddpar))
 {

@@ -20,7 +20,7 @@ opts_chunk$set(echo=FALSE,
                warning=FALSE,
                message=FALSE,
                fig.path='../Figures/',
-               fig.width= 4,
+               fig.width= 8,
                fig.height= 8,
                fig.show='asis',
                dev='png')
@@ -41,7 +41,7 @@ source('Scripts/Telomere parentage MODELS.r')
 
 
 
-**Table S1** Generalised linear mixed model output for analysis of parental condition on offspring sex ratio. We ran seperate models for mothers, fathers, and the mean telomere length of both parents.
+**Table S1** Generalised linear mixed model output for analysis of parental telomere length offspring sex ratio. We ran seperate models for mothers, fathers, and the mean telomere length of both parents.
 
 ```{r Table S1}
 
@@ -159,3 +159,86 @@ kable(TableS3)
 
 ```
 
+
+
+**Table S4** Generalised linear mixed model output for analysis of parental condition on offspring sex ratio. We ran seperate models for mothers, fathers, and the mean body condition of both parents.
+
+```{r Table S4}
+
+Mothers <- rep(' ',4)
+  
+mumtab <- summary(sr_FLmumcon)$coefficients
+mumtab <- round(mumtab,3)
+
+
+Fathers <- rep(' ',4)
+
+dadtab <- summary(sr_FLdadcon)$coefficients
+dadtab <- round(dadtab,3)
+
+Combined <- rep(' ',4)
+
+partab <- summary(sr_FLparcon)$coefficients
+partab <- round(partab,3)
+
+TableS4 <- rbind(Mothers,mumtab,Fathers,dadtab,Combined,partab)
+TableS4[TableS4 == '0'] <- '<0.001'
+
+nams <- rownames(TableS4)
+nams[nams == 'mumcon'] <- 'Maternal condition'
+nams[nams == 'mumage'] <- 'Maternal age'
+nams[nams == 'Helper'] <- 'Num. Helpers'
+nams[nams == 'dadcon'] <- 'Paternal condition'
+nams[nams == 'dadage'] <- 'Paternal age'
+nams[nams == 'parcon'] <- 'Parental condition'
+
+rownames(TableS4) <- nams
+colnames(TableS4)[colnames(TableS4) == "Pr(>|z|)"] <- "P"
+
+kable(TableS4)
+
+```
+
+
+
+
+**Figure S1** Parental body condition in relation to sex ratio in the Seychelles warbler. **A** Maternal and peternal body condition are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental body condition (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
+
+
+```{r FigureS1}
+
+Fig2A <- ggplot(FL,aes(x = dadcon,y = mumcon)) +
+  geom_point(alpha=0.2) +
+  xlab('Paternal condition') +
+  ylab('Maternal condition') +
+  theme_lgs(addlegend = T) +
+  stat_smooth(method = 'lm') +
+  annotate(geom = 'text',x = -1,y = 2,label = 'A')
+
+Fig2B <- ggplot(FL,aes(x = mumcon,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Maternal condition') +
+  ylab('Proportion male offspring') +
+  theme_lgs(addlegend = T) +
+  annotate(geom = 'text',x = -2,y = 1,label = 'B')
+
+Fig2C <- ggplot(FL,aes(x = dadcon,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Paternal condition') +
+  ylab('Proportion male offspring') +
+  theme_lgs(addlegend = T) +
+  annotate(geom = 'text',x = -1,y = 1,label = 'C')
+Fig2D <- ggplot(FL,aes(x = parcon,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Mean parental condition') +
+  ylab('Proportion male offspring') +
+  theme_lgs(addlegend = T) +
+  annotate(geom = 'text',x = -1,y = 1,label = 'D')
+
+
+multiplot(Fig2A,Fig2B,Fig2C,Fig2D,layout=matrix(c(1,2,3,4),2,2,byrow=T))
+
+```

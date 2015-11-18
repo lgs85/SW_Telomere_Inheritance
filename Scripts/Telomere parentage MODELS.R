@@ -30,3 +30,12 @@ FLTL_parTL <- lmer(TLKB~parTL * Sex + Helper + TQ + (1|mother) + (1|LayYear),dat
 # Telomere length and survival --------------------------------------------
 FLsurv <- glmer(SurvivedNext~TLKB*Sex+(1|LayYear),data=FL,family = binomial,na.action=na.exclude)
 FLsurvsex <- glmer(SurvivedNext~Sex+(1|LayYear),data=FL,family = binomial,na.action=na.exclude)
+
+
+
+
+# Parental body condition and sex ratio -----------------------------------
+sr_FLmumcon <- glmer(SexEstimate ~  mumcon + mumage + Helper + (1|mother) + (1|LayYear),data = FL,family = 'binomial',na.action=na.exclude)
+sr_FLdadcon <- glmer(SexEstimate ~ dadcon + Helper + (1|father),data = FL,family = 'binomial',na.action=na.exclude)
+sr_FLparcon <- glmer(SexEstimate ~ parcon + mumage + dadage + Helper + (1|LayYear),data = FL,family = 'binomial',na.action=na.exclude)
+
