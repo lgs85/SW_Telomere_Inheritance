@@ -51,12 +51,11 @@ dd <- subset(dd,BodyMass>5)
 dd <- subset(dd,Tarsus>17)
 dd <- subset(dd,LayYear>1992)
 
-dd$Condition <- lm(BodyMass~Tarsus, data = dd,na.action = na.omit)$resid
+dd$Condition <- lm(BodyMass~Tarsus,data=dd)$resid
+
 
 # Telomere data -----------------------------------------------------------
 
-mymed <- median(dd$TL)
-dd$TLF <- ifelse(dd$TL>mymed,'Long telomeres','Short telomeres')
 dd$TLKB <- dd$TL/1000
 
 # Age data ----------------------------------------------------------------
@@ -71,17 +70,6 @@ dd$Fledged <- ifelse(dd$Ageclass == 'CH','Nestlings',
                      ifelse(dd$Ageclass == 'A','Adults',
                             'Fledglings'))
 dd$Fledged <- factor(dd$Fledged,levels = c('Nestlings','Fledglings','Adults'))
-
-
-dd$Agemonths <- ifelse(dd$Ageclass == 'CH',1,
-                       ifelse(dd$Ageclass == 'FL',3,
-                              ifelse(dd$Ageclass == 'SA',9,dd$Age*12)))
-dd$AgemonthF <- ifelse(dd$Ageclass == 'CH','<1',
-                       ifelse(dd$Ageclass == 'FL','1-9',
-                              ifelse(dd$Ageclass == 'SA','9-12','>12')))
-dd$AgemonthF <- factor(dd$AgemonthF,levels = c('<1','1-9','9-12','>12'))
-
-dd <- subset(dd,Agemonths>0)
 
 
 # Survival and lifespan ---------------------------------------------------
@@ -157,7 +145,7 @@ ddpar$EPP <- ifelse(is.na(ddpar$father),'Extra pair','Within pair')
 #Get parental telomere lngth from both early and later life
 ddDate <- dd[order(dd$BirdID,dd$CatchDate),]
 earlies <- subset(ddDate,Ageclass!='A')
-lates <- ddDate
+
 
 #Early life parental TL
 ParTL <- with(earlies,aggregate(TL,list(BirdID),mean))
@@ -165,13 +153,13 @@ colnames(ParTL) <- c('BirdID','TL')
 ddpar$EmumTL <- unlist(lapply(ddpar$mother,findTL))
 ddpar$EdadTL <- unlist(lapply(ddpar$father,findTL))
 
-#Adult parental TL
-ParTL <- with(lates,aggregate(TL,list(BirdID),mean))
+#All parental TL
+ParTL <- with(ddDate,aggregate(TL,list(BirdID),mean))
 colnames(ParTL) <- c('BirdID','TL')
 ddpar$LmumTL <- unlist(lapply(ddpar$mother,findTL))
 ddpar$LdadTL <- unlist(lapply(ddpar$father,findTL))
 
-ParTL<- with(lates,aggregate(Condition,list(BirdID),mean))
+ParTL<- with(ddDate,aggregate(Condition,list(BirdID),mean))
 colnames(ParTL) <- c('BirdID','TL')
 ddpar$mumCon <- unlist(lapply(ddpar$mother,findTL))
 ddpar$dadCon <- unlist(lapply(ddpar$father,findTL))
