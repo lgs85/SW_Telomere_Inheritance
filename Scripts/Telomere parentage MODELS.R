@@ -39,3 +39,11 @@ sr_FLmumcon <- glmer(SexEstimate ~  mumcon + mumage + Helper + (1|mother) + (1|L
 sr_FLdadcon <- glmer(SexEstimate ~ dadcon + Helper + (1|father),data = FL,family = 'binomial',na.action=na.exclude)
 sr_FLparcon <- glmer(SexEstimate ~ parcon + mumage + dadage + Helper + (1|LayYear),data = FL,family = 'binomial',na.action=na.exclude)
 
+
+# Maternal telomere length and territory quality --------------------------
+mumTL_TQ <- lm(LmumTLKB~TQ,data=FL,na.action=na.exclude)
+
+FLearly <- subset(FL,LayYear<2001)
+mumTL_TQ_early <- lm(LmumTLKB~TQ,data=FLearly,na.action=na.exclude)
+
+summary(mumTL_TQ_early)

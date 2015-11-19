@@ -525,18 +525,26 @@ getstat <- function(model,variable,stat,standardise = T)
       {
         if(stat == 't')
         {
-          return(round2(summary(model)$coef[variable,'t value']))
+          return(round2(summary(model)$coefficients[variable,'t value']))
         } else
         {
           if(stat == 'P')
           {
-            return(round2(summary(model)$coef[variable,'Pr(>|t|)']))
+            return(round2(summary(model)$coefficients[variable,'Pr(>|t|)']))
           } else
             {
               if(stat == 'est')
               {
-                return(round2(summary(model)$coef[variable,'Estimate']))
-              } else stop('you need to add this stat to the function')
+                return(round2(summary(model)$coefficients[variable,'Estimate']))
+              } else 
+                if(stat == 'CI')
+                {
+                  est <- summary(model)$coefficients[variable,'Estimate']
+                  se1 <- summary(model)$coefficients[variable,'Std. Error']
+                  UCI <- round2(est+(1.96*se1),lessthan = F)
+                  LCI <- round2(est-(1.96*se1),lessthan = F)
+                  return(paste0(LCI,', ',UCI))
+                } else stop('you need to add this stat to the function')
             }
         }
       }

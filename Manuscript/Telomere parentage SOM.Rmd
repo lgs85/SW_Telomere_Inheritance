@@ -202,12 +202,41 @@ kable(TableS4)
 
 
 
-**Figure S1** Parental body condition in relation to sex ratio in the Seychelles warbler. **A** Maternal and peternal body condition are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental body condition (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
+**Figure S2** Parental body condition in relation to sex ratio in the Seychelles warbler. **A** Maternal and peternal body condition are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental body condition (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
 
 
 ```{r FigureS1}
 
-Fig2A <- ggplot(FL,aes(x = dadcon,y = mumcon)) +
+FigS1A <- ggplot(subset(FL,TQ>9),aes(x = TQ,y = LmumTLKB)) +
+  geom_point(alpha=0.2) +
+  xlab('Territory quality') +
+  ylab('Maternal telomere length (kb)') +
+  theme_lgs(addlegend = T) +
+  annotate(geom = 'text',x = 9,y = 12,label = 'A')
+
+FigS1B <- ggplot(FLearly,aes(x = TQ,y = LmumTLKB)) +
+  geom_point(alpha=0.2) +
+  xlab('Territory quality') +
+  ylab('Maternal telomere length (kb)') +
+  theme_lgs(addlegend = T) +
+  annotate(geom = 'text',x = 9.5,y = 12,label = 'B')
+
+
+
+multiplot(FigS1A,FigS1B,layout=matrix(1:4,2,2))
+
+```
+
+
+
+
+
+**Figure S2** Parental body condition in relation to sex ratio in the Seychelles warbler. **A** Maternal and peternal body condition are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental body condition (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
+
+
+```{r FigureS2}
+
+FigS2A <- ggplot(FL,aes(x = dadcon,y = mumcon)) +
   geom_point(alpha=0.2) +
   xlab('Paternal condition') +
   ylab('Maternal condition') +
@@ -215,7 +244,7 @@ Fig2A <- ggplot(FL,aes(x = dadcon,y = mumcon)) +
   stat_smooth(method = 'lm') +
   annotate(geom = 'text',x = -1,y = 2,label = 'A')
 
-Fig2B <- ggplot(FL,aes(x = mumcon,y = SexEstimate)) +
+FigS2B <- ggplot(FL,aes(x = mumcon,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal condition') +
@@ -223,14 +252,14 @@ Fig2B <- ggplot(FL,aes(x = mumcon,y = SexEstimate)) +
   theme_lgs(addlegend = T) +
   annotate(geom = 'text',x = -2,y = 1,label = 'B')
 
-Fig2C <- ggplot(FL,aes(x = dadcon,y = SexEstimate)) +
+FigS2C <- ggplot(FL,aes(x = dadcon,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Paternal condition') +
   ylab('Proportion male offspring') +
   theme_lgs(addlegend = T) +
   annotate(geom = 'text',x = -1,y = 1,label = 'C')
-Fig2D <- ggplot(FL,aes(x = parcon,y = SexEstimate)) +
+FigS2D <- ggplot(FL,aes(x = parcon,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Mean parental condition') +
@@ -239,6 +268,6 @@ Fig2D <- ggplot(FL,aes(x = parcon,y = SexEstimate)) +
   annotate(geom = 'text',x = -1,y = 1,label = 'D')
 
 
-multiplot(Fig2A,Fig2B,Fig2C,Fig2D,layout=matrix(c(1,2,3,4),2,2,byrow=T))
+multiplot(FigS2A,FigS2B,FigS2C,FigS2D,layout=matrix(c(1,2,3,4),2,2,byrow=T))
 
 ```
