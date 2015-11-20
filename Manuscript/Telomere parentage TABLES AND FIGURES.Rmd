@@ -37,9 +37,9 @@ source('Scripts/Telomere parentage CLEAN.r')
 
 **Figure 1** Sex ratio over time in Juvenile Seychelles warblers. The dotted and dashed lines represent equal sex ratio and 95% confidence limits from simulated sex ratio data based on temporal variation in sample size, respectively. 
 
-**Figure 2** Parental telomere length and offspring sex ratio in the Seychelles warbler. **A** Maternal and peternal telomere length are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental telomere length (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
+**Figure 2** Parental telomere length and offspring sex ratio in the Seychelles warbler. **A** Maternal and paternal telomere length are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental telomere length (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
 
-**Figure 3** Parental telomere length and offspring condition and survival in the Seychelles warbler.  **A** Offspring telomere length in relation to maternal telomere length, **B** paternal telomere length, and **C** mean parental telomere length. **D** Offspring survival to adulthood in relation to telomere length. Lines and shaded areas represent estimates and 95% confidence limits from linear regressions (**A-C**) and logistic regression (**D**). Blue = males, red = Females.
+**Figure 3** Parental telomere length and offspring condition and survival in the Seychelles warbler.  **A** Offspring telomere length in relation to maternal telomere length, **B** paternal telomere length, and **C** mean parental telomere length. **D** Offspring survival to adulthood in relation to telomere length. Lines and shaded areas represent estimates and 95% confidence limits from linear regressions (**A-C**) and logistic regression (**D**). Blue, dashed lines = males, red, solid lines = Females.
 
 
 ```{r Figure 1}
@@ -111,14 +111,14 @@ dev.off()
 ```{r Figure3}
 
 
-Fig3A <- ggplot(FL,aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex)) +
+Fig3A <- ggplot(FL,aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex, lty = Sex)) +
   geom_point() +
   stat_smooth(method=lm) +
   xlab('Maternal TL (kb)') +
   ylab('Offspring TL (kb)') +
   theme_lgs() +
   annotate(geom = 'text',x = 1.5,y = 12.5,label = 'A')
-Fig3B <- ggplot(FL,aes(x = LdadTLKB, y = TLKB,col = Sex, fill = Sex)) +
+Fig3B <- ggplot(FL,aes(x = LdadTLKB, y = TLKB,col = Sex, fill = Sex, lty = Sex)) +
   geom_point() +
   stat_smooth(method=lm) +
   xlab('Paternal TL (kb)') +
@@ -126,14 +126,14 @@ Fig3B <- ggplot(FL,aes(x = LdadTLKB, y = TLKB,col = Sex, fill = Sex)) +
   theme_lgs() +
   annotate(geom = 'text',x = 1.5,y = 12.5,label = 'B')
 
-Fig3C <- ggplot(FL,aes(x = parTL, y = TLKB,col = Sex, fill = Sex)) +
+Fig3C <- ggplot(FL,aes(x = parTL, y = TLKB,col = Sex, fill = Sex, lty = Sex)) +
   geom_point() +
   stat_smooth(method=lm) +
   xlab('Mean parental TL (kb)') +
   ylab('Offspring TL (kb)') +
   theme_lgs() +
   annotate(geom = 'text',x = 1.5,y = 12.5,label = 'C')
-Fig3D <- ggplot(FL,aes(x = TLKB, y = SurvivedNext,col = Sex, fill = Sex)) +
+Fig3D <- ggplot(FL,aes(x = TLKB, y = SurvivedNext,col = Sex, fill = Sex, lty = Sex)) +
   geom_point(alpha= 0.2) +
   stat_smooth(method=glm, family = binomial) +
   xlab('Offspring TL (kb)') +

@@ -41,7 +41,7 @@ source('Scripts/Telomere parentage MODELS.r')
 
 
 
-**Table S1** Generalised linear mixed model output for analysis of parental telomere length offspring sex ratio. We ran seperate models for mothers, fathers, and the mean telomere length of both parents.
+**Table S1** Generalised linear mixed model output for analysis of parental telomere length offspring sex ratio. We ran separate models for mothers, fathers, and the mean telomere length of both parents.
 
 ```{r Table S1}
 
@@ -86,7 +86,7 @@ kable(TableS1)
 
 PAGEBREAK
 
-**Table S2** Linear mixed model output showing the relaitonship between parental and offspring telomere length in the Seyhelles warbler. We ran seperate models mor mothers, fathers, and the mean telomere length of both parents.
+**Table S2** Linear mixed model output showing the relationship between parental and offspring telomere length in the Seychelles warbler. We ran separate models for mothers, fathers, and the mean telomere length of both parents.
 
 
 ```{r Table S2}
@@ -138,7 +138,7 @@ kable(TableS2)
 
 PAGEBREAK
 
-**Table S3** Generalised linear mixed model output showing the effects of telomere length and sex on survival to adulthood in juvneile Seychelles warblers.
+**Table S3** Generalised linear mixed model output showing the effects of telomere length and sex on survival to adulthood in juvenile Seychelles warblers.
 
 ```{r Table S3}
 
@@ -161,7 +161,10 @@ kable(TableS3)
 
 
 
-**Table S4** Generalised linear mixed model output for analysis of parental condition on offspring sex ratio. We ran seperate models for mothers, fathers, and the mean body condition of both parents.
+PAGEBREAK
+
+
+**Table S4** Generalised linear mixed model output for analysis of parental condition on offspring sex ratio. We ran separate models for mothers, fathers, and the mean body condition of both parents.
 
 ```{r Table S4}
 
@@ -200,21 +203,102 @@ kable(TableS4)
 ```
 
 
+PAGEBREAK
 
 
-**Figure S2** Parental body condition in relation to sex ratio in the Seychelles warbler. **A** Maternal and peternal body condition are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental body condition (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
-
+**Figure S1** Offspring sex ratio in relation to parental telomere length and  **A** presence of siblings in the natal territory, and **B** maternal breeding status in the Seychelles warbler. In both plots, lines and shaded areas reflect model fits and 95% confidence limits from logistic regressions. In **A** the relationship between mean parental telomere length and offspring sex ratio is plotted separately for offspring that are raised with (solid red line) and without (dashed blue line) a sibling. In **B** the relationship between maternal telomere length and sex ratio is plotted separately for offspring raised by mothers that were dominant females (red, solid line), and co-breeders (blue, dashed line).
 
 ```{r FigureS1}
+temp <- subset(FL,OtherJuvs<2)
+temp$OtherJuvs <- factor(temp$OtherJuvs)
 
-FigS1A <- ggplot(subset(FL,TQ>9),aes(x = TQ,y = LmumTLKB)) +
+FigS1A <- ggplot(temp,aes(x = parTL,y = SexEstimate,col=OtherJuvs,fill = OtherJuvs,lty = OtherJuvs)) +
+  geom_point(alpha=0.2) +
+  ylab('Proportion male offspring') +
+  xlab('Mean parental telomere length (kb)') +
+  stat_smooth(method = glm, family = binomial) +
+  theme_lgs() +
+  annotate(geom = 'text',x = 2,y = 1,label = 'A')
+
+temp <- FL[!(is.na(FL$mumstatus)),]
+temp$mumstatus[temp$mumstatus == "BrF"] <- "Breeding Female"
+temp$mumstatus[temp$mumstatus == "H"] <- "Co-breeder"
+
+
+FigS1B <- ggplot(temp,aes(x = LmumTLKB,y = SexEstimate,col=mumstatus,fill = mumstatus,lty = mumstatus)) +
+  geom_point(alpha=0.2) +
+  ylab('Proportion male offspring') +
+  xlab('Maternal telomere length (kb)') +
+  stat_smooth(method = glm, family = binomial) +
+  theme_lgs() +
+  annotate(geom = 'text',x = 1,y = 1,label = 'B')
+
+
+multiplot(FigS1A,FigS1B,layout=matrix(1:4,2,2))
+
+
+```
+
+
+PAGEBREAK
+
+
+**Figure S2** Telomere length and sex ratio in nestling Seychelles warblers. **A** Nestling sex ratio and mean parental telomere length. Sample size was not large enough to run a mixed model, but a logistic regression suggested a marginally non-significant relationship between parental telomere length and offspring sex (P = `r getstat(sr_NLparTL,'parTL','P')`). **B** Nestling telomere length in relation to mean parental telomere length (linear regression, P = `r getstat(NLTL_parTL,'parTL','P')`). **C** Nestling telomere length and survival to adulthood (logistic regression, P = `r getstat(NLsurv,'TLKB','P')`). Lines and shaded areas represent fitted values and 95% confidence limits from logistic and linear regressions, and in **B** and **C** relationships are plotted separately for males (blue, dashed lines) and females (red, solid lines).
+
+```{r FigureS2}
+
+FigS2A <- ggplot(srchick,aes(x = Year, y = sr)) +
+  geom_line() +
+  geom_line(aes(y = upperCI),lty = 2) +
+  geom_line(aes(y = lowerCI),lty = 2) +
+  theme_lgs() +
+  theme(axis.text.x = element_text(angle = 60,hjust=1)) +
+  ylim(c(0,1)) +
+  geom_abline(aes(intercept = 0.5,slope = 0),lty=3,col=grey(0.5)) +
+  ylab('Proportion male offspring') +
+    annotate(geom = 'text',x = 1990,y = 1,label = 'A')
+FigS2B <- ggplot(NL,aes(x = parTL,y = SexEstimate)) +
+  geom_point(alpha=0.2) +
+  stat_smooth(method = 'glm',family = 'binomial',se=T) +
+  xlab('Mean parental TL (kb)') +
+  ylab('Proportion male offspring') +
+  theme_lgs(addlegend = T) +
+  annotate(geom = 'text',x = 1,y = 1,label = 'B')
+FigS2C <- ggplot(NL,aes(x = parTL, y = TLKB,col = Sex, fill = Sex,lty=Sex)) +
+  geom_point() +
+  stat_smooth(method=lm) +
+  xlab('Mean parental TL (kb)') +
+  ylab('Offspring TL (kb)') +
+  theme_lgs() +
+  annotate(geom = 'text',x = 1.5,y = 15,label = 'C')
+FigS2D <- ggplot(NL,aes(x = TLKB, y = SurvivedNext,col = Sex, fill = Sex,lty=Sex)) +
+  geom_point(alpha= 0.2) +
+  stat_smooth(method=glm, family = binomial) +
+  xlab('Offspring TL (kb)') +
+  ylab('Survival to adulthood') +
+  theme_lgs() +
+  annotate(geom = 'text',x = 1,y = 1,label = 'D')
+
+
+multiplot(FigS2A,FigS2B,FigS2C,FigS2D,layout=matrix(c(1,2,3,4),2,2,byrow=T))
+
+```
+
+
+PAGEBREAK
+
+**Figure S3** Maternal telomere length in relation to territory quality, including **A** all years, and **B** only telomere measurements taken before the year 2000.
+
+```{r FigureS3}
+
+FigS3A <- ggplot(subset(FL,TQ>9),aes(x = TQ,y = LmumTLKB)) +
   geom_point(alpha=0.2) +
   xlab('Territory quality') +
   ylab('Maternal telomere length (kb)') +
   theme_lgs(addlegend = T) +
   annotate(geom = 'text',x = 9,y = 12,label = 'A')
 
-FigS1B <- ggplot(FLearly,aes(x = TQ,y = LmumTLKB)) +
+FigS3B <- ggplot(FLearly,aes(x = TQ,y = LmumTLKB)) +
   geom_point(alpha=0.2) +
   xlab('Territory quality') +
   ylab('Maternal telomere length (kb)') +
@@ -223,20 +307,20 @@ FigS1B <- ggplot(FLearly,aes(x = TQ,y = LmumTLKB)) +
 
 
 
-multiplot(FigS1A,FigS1B,layout=matrix(1:4,2,2))
+multiplot(FigS3A,FigS3B,layout=matrix(1:4,2,2))
 
 ```
 
 
+PAGEBREAK
 
 
+**Figure S4** Parental body condition in relation to sex ratio in the Seychelles warbler. **A** Maternal and paternal body condition are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental body condition (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
 
-**Figure S2** Parental body condition in relation to sex ratio in the Seychelles warbler. **A** Maternal and peternal body condition are not related to one another. **B-D** Offspring sex ratio in relation to maternal (**B**), paternal (**C**) and mean parental body condition (**D**). Individual points represent individual male (top) and female (bottom) offspring. Lines and shaded areas represent fitted values and 95% confidence limits from a logistic regression.
 
+```{r FigureS4}
 
-```{r FigureS2}
-
-FigS2A <- ggplot(FL,aes(x = dadcon,y = mumcon)) +
+FigS4A <- ggplot(FL,aes(x = dadcon,y = mumcon)) +
   geom_point(alpha=0.2) +
   xlab('Paternal condition') +
   ylab('Maternal condition') +
@@ -244,7 +328,7 @@ FigS2A <- ggplot(FL,aes(x = dadcon,y = mumcon)) +
   stat_smooth(method = 'lm') +
   annotate(geom = 'text',x = -1,y = 2,label = 'A')
 
-FigS2B <- ggplot(FL,aes(x = mumcon,y = SexEstimate)) +
+FigS4B <- ggplot(FL,aes(x = mumcon,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal condition') +
@@ -252,14 +336,15 @@ FigS2B <- ggplot(FL,aes(x = mumcon,y = SexEstimate)) +
   theme_lgs(addlegend = T) +
   annotate(geom = 'text',x = -2,y = 1,label = 'B')
 
-FigS2C <- ggplot(FL,aes(x = dadcon,y = SexEstimate)) +
+FigS4C <- ggplot(FL,aes(x = dadcon,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Paternal condition') +
   ylab('Proportion male offspring') +
   theme_lgs(addlegend = T) +
   annotate(geom = 'text',x = -1,y = 1,label = 'C')
-FigS2D <- ggplot(FL,aes(x = parcon,y = SexEstimate)) +
+
+FigS4D <- ggplot(FL,aes(x = parcon,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Mean parental condition') +
@@ -268,6 +353,6 @@ FigS2D <- ggplot(FL,aes(x = parcon,y = SexEstimate)) +
   annotate(geom = 'text',x = -1,y = 1,label = 'D')
 
 
-multiplot(FigS2A,FigS2B,FigS2C,FigS2D,layout=matrix(c(1,2,3,4),2,2,byrow=T))
+multiplot(FigS4A,FigS4B,FigS4C,FigS4D,layout=matrix(c(1,2,3,4),2,2,byrow=T))
 
 ```

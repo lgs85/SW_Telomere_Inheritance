@@ -198,6 +198,7 @@ juv <- subset(juv,Status!='XF')
 
 status <- subset(status,BreedGroupID %in% juv$BreedGroupID)
 
+juv$mumstatus <- NA
 for(i in 1:nrow(juv))
 {
   currentBG <- juv$BreedGroupID[i]
@@ -206,15 +207,19 @@ for(i in 1:nrow(juv))
   juv$Helper[i] <- nrow(subset(currentdata,Status == 'H'))
   juv$OtherJuvs[i] <- nrow(subset(currentdata,Status %in% c('CH','FL','OFL')))
   juv$NonHelper[i] <- nrow(subset(currentdata,Status %in% c('AB','ABX')))
+  if(juv$mother[i] %in% currentdata$BirdID)
+  {
+    juv$mumstatus[i] <- paste(subset(currentdata,BirdID == juv$mother[i])$Status)
+  }
 }
 
 
 
 # Sex ratio by year -------------------------------------------------------
-allcatches <- subset(allcatches,MinOfAgeclass!='CH')
+allcatches1 <- subset(allcatches,MinOfAgeclass!='CH')
 
-sr <- tapply(allcatches$SexEstimate,allcatches$LayYear,mean,na.rm=T)
-srn <- tapply(allcatches$SexEstimate,allcatches$LayYear,length)
+sr <- tapply(allcatches1$SexEstimate,allcatches1$LayYear,mean,na.rm=T)
+srn <- tapply(allcatches1$SexEstimate,allcatches1$LayYear,length)
 
 sr <- sr[srn>20]
 sr <- sr[names(sr)>1989]
@@ -236,6 +241,40 @@ for(i in 1:length(sr))
 }
 
 ddFig1 <- data.frame(Year = as.numeric(names(sr)),sr,upperCI,lowerCI,row.names = NULL)
+
+
+
+# Sex ratio by year in nestlings -------------------------------------------------------
+allcatches2 <- subset(allcatches,MinOfAgeclass=='CH')
+
+sr <- tapply(allcatches2$SexEstimate,allcatches2$LayYear,mean,na.rm=T)
+srn <- tapply(allcatches2$SexEstimate,allcatches2$LayYear,length)
+
+sr <- sr[srn>10]
+sr <- sr[names(sr)>1989]
+
+
+sims <- rep(NA,5000)
+upperCI <- rep(NA,length(sr))
+lowerCI <- rep(NA,length(sr))
+
+set.seed(111)
+
+for(i in 1:length(sr))
+{
+  currentyear <- names(sr[i])
+  n <- srn[names(srn) == currentyear]
+  for(j in 1:5000) sims[j] <- mean(sample(c(0,1),n,replace = T))
+  upperCI[i] <- quantile(sims,0.95)
+  lowerCI[i] <- quantile(sims,0.05)
+}
+
+srchick <- data.frame(Year = as.numeric(names(sr)),sr,upperCI,lowerCI,row.names = NULL)
+
+
+# Subset fledglings and nestlings -----------------------------------------
+
+
 
 FL <- subset(juv,Fledged == 'Fledglings')
 NL <- subset(juv,Fledged == 'Nestlings')

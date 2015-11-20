@@ -512,7 +512,7 @@ getstat <- function(model,variable,stat,standardise = T)
     }
   } else 
   {
-    if(class(model) == 'lm')
+    if(class(model) %in% c('lm','glm'))
     {
       if(standardise == T) model <- standardize(model)
       modelterms <- rownames(summary(model)$coefficients)

@@ -47,3 +47,11 @@ FLearly <- subset(FL,LayYear<2001)
 mumTL_TQ_early <- lm(LmumTLKB~TQ,data=FLearly,na.action=na.exclude)
 
 summary(mumTL_TQ_early)
+
+
+
+# Nestling models ---------------------------------------------------------
+
+sr_NLparTL <- glm(SexEstimate~parTL,data=NL,na.action=na.exclude)
+NLTL_parTL <- lm(TLKB~parTL,data=NL,na.action=na.exclude)
+NLsurv <- glm(SurvivedNext~TLKB,data=NL,na.action=na.exclude)
