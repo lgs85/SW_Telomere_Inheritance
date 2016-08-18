@@ -61,18 +61,30 @@ Fig1
 dev.off()
 
 
+
 ```
 
 ```{r Figure2}
 
-Fig2A <- ggplot(juv,aes(x = LdadTL,y = LmumTL)) +
+
+Fig2A <- ggplot(juv,aes(x = EdadTL,y = EmumTL)) +
   geom_point(alpha=0.2) +
   xlab('Paternal RTL (kb)') +
   ylab('Maternal RTL (kb)') +
   theme_lgs(addlegend = T)
   annotate(geom = 'text',x = 1,y = 12,label = 'A')
 
-Fig2B <- ggplot(juv,aes(x = LmumTL,y = SexEstimate)) +
+t1 <- tapply(juv$RTL,juv$LayYear,mean)
+mymed <- median(t1)
+gys <- names(which(t1>mymed))
+bys <- names(which(t1<mymed))
+
+juv$gy <- ifelse(juv$LayYear %in% gys,'gy','by')
+  
+
+temp <- FL
+
+Fig2B <- ggplot(temp,aes(x = EmumTL,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Maternal RTL (kb)') +
@@ -80,14 +92,14 @@ Fig2B <- ggplot(juv,aes(x = LmumTL,y = SexEstimate)) +
   theme_lgs(addlegend = T)
   annotate(geom = 'text',x = 1,y = 1,label = 'B')
 
-Fig2C <- ggplot(juv,aes(x = LdadTL,y = SexEstimate)) +
+Fig2C <- ggplot(temp,aes(x = EdadTL,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Paternal RTL (kb)') +
   ylab('Proportion male offspring') +
   theme_lgs(addlegend = T)
   annotate(geom = 'text',x = 1,y = 1,label = 'C')
-Fig2D <- ggplot(juv,aes(x = parTL,y = SexEstimate)) +
+Fig2D <- ggplot(temp,aes(x = parTL,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
   xlab('Mean parental RTL (kb)') +

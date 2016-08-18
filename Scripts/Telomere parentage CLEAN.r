@@ -28,6 +28,8 @@ dd$Season <- ifelse(as.numeric(format(dd$CatchDate,'%m')) %in% c(4:10),
                     'Summer','Winter')
 
 head(dd)
+
+dd <- subset(dd,Season == 'Summer')
 # Tarsus ------------------------------------------------------------------
 
 dd$Tarsus <- NA
@@ -156,7 +158,7 @@ ParTL <- with(ddDate,aggregate(RTL,list(BirdID),mean))
 colnames(ParTL) <- c('BirdID','RTL')
 ddpar$LmumTL <- unlist(lapply(ddpar$mother,findTL))
 ddpar$LdadTL <- unlist(lapply(ddpar$father,findTL))
-ddpar$parTL <- with(ddpar,(LmumTL+LdadTL)/2)
+ddpar$parTL <- with(ddpar,(LmumTL*LdadTL))
 
 
 #Parental condition (ignore telomere names, kept this out of laziness)
