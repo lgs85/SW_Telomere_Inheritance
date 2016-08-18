@@ -155,7 +155,7 @@ findTL <- function(bird,TLfile = ParTL)
     } else
     {
       {
-        return(TLfile[TLfile$BirdID == bird,'TL'])
+        return(TLfile[TLfile$BirdID == bird,'RTL'])
       }
     }
   }

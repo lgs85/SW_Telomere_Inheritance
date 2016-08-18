@@ -65,34 +65,34 @@ dev.off()
 
 ```{r Figure2}
 
-Fig2A <- ggplot(FL,aes(x = LdadTLKB,y = LmumTLKB)) +
+Fig2A <- ggplot(juv,aes(x = LdadTL,y = LmumTL)) +
   geom_point(alpha=0.2) +
-  xlab('Paternal TL (kb)') +
-  ylab('Maternal TL (kb)') +
-  theme_lgs(addlegend = T) +
+  xlab('Paternal RTL (kb)') +
+  ylab('Maternal RTL (kb)') +
+  theme_lgs(addlegend = T)
   annotate(geom = 'text',x = 1,y = 12,label = 'A')
 
-Fig2B <- ggplot(FL,aes(x = LmumTLKB,y = SexEstimate)) +
+Fig2B <- ggplot(juv,aes(x = LmumTL,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Maternal TL (kb)') +
+  xlab('Maternal RTL (kb)') +
   ylab('Proportion male offspring') +
-  theme_lgs(addlegend = T) +
+  theme_lgs(addlegend = T)
   annotate(geom = 'text',x = 1,y = 1,label = 'B')
 
-Fig2C <- ggplot(FL,aes(x = LdadTLKB,y = SexEstimate)) +
+Fig2C <- ggplot(juv,aes(x = LdadTL,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Paternal TL (kb)') +
+  xlab('Paternal RTL (kb)') +
   ylab('Proportion male offspring') +
-  theme_lgs(addlegend = T) +
+  theme_lgs(addlegend = T)
   annotate(geom = 'text',x = 1,y = 1,label = 'C')
-Fig2D <- ggplot(FL,aes(x = parTL,y = SexEstimate)) +
+Fig2D <- ggplot(juv,aes(x = parTL,y = SexEstimate)) +
   geom_point(alpha=0.2) +
   stat_smooth(method = 'glm',family = 'binomial',se=T) +
-  xlab('Mean parental TL (kb)') +
+  xlab('Mean parental RTL (kb)') +
   ylab('Proportion male offspring') +
-  theme_lgs(addlegend = T) +
+  theme_lgs(addlegend = T)
   annotate(geom = 'text',x = 1,y = 1,label = 'D')
 
 
@@ -111,32 +111,32 @@ dev.off()
 ```{r Figure3}
 
 
-Fig3A <- ggplot(FL,aes(x = LmumTLKB, y = TLKB,col = Sex, fill = Sex, lty = Sex)) +
+Fig3A <- ggplot(juv,aes(x = LmumTL, y = RTL,col = Sex, fill = Sex, lty = Sex)) +
   geom_point() +
   stat_smooth(method=lm) +
-  xlab('Maternal TL (kb)') +
-  ylab('Offspring TL (kb)') +
-  theme_lgs() +
+  xlab('Maternal RTL (kb)') +
+  ylab('Offspring RTL (kb)') +
+  theme_lgs()
   annotate(geom = 'text',x = 1.5,y = 12.5,label = 'A')
-Fig3B <- ggplot(FL,aes(x = LdadTLKB, y = TLKB,col = Sex, fill = Sex, lty = Sex)) +
+Fig3B <- ggplot(juv,aes(x = LdadTL, y = RTL,col = Sex, fill = Sex, lty = Sex)) +
   geom_point() +
   stat_smooth(method=lm) +
-  xlab('Paternal TL (kb)') +
-  ylab('Offspring TL (kb)') +
-  theme_lgs() +
+  xlab('Paternal RTL (kb)') +
+  ylab('Offspring RTL (kb)') +
+  theme_lgs()
   annotate(geom = 'text',x = 1.5,y = 12.5,label = 'B')
 
-Fig3C <- ggplot(FL,aes(x = parTL, y = TLKB,col = Sex, fill = Sex, lty = Sex)) +
+Fig3C <- ggplot(juv,aes(x = parTL, y = RTL,col = Sex, fill = Sex, lty = Sex)) +
   geom_point() +
   stat_smooth(method=lm) +
-  xlab('Mean parental TL (kb)') +
-  ylab('Offspring TL (kb)') +
-  theme_lgs() +
+  xlab('Mean parental RTL (kb)') +
+  ylab('Offspring RTL (kb)') +
+  theme_lgs()
   annotate(geom = 'text',x = 1.5,y = 12.5,label = 'C')
-Fig3D <- ggplot(FL,aes(x = TLKB, y = SurvivedNext,col = Sex, fill = Sex, lty = Sex)) +
+Fig3D <- ggplot(FL,aes(x = RTL, y = SurvivedNext,col = Sex, fill = Sex, lty = Sex)) +
   geom_point(alpha= 0.2) +
   stat_smooth(method=glm, family = binomial) +
-  xlab('Offspring TL (kb)') +
+  xlab('Offspring RTL (kb)') +
   ylab('Survival to adulthood') +
   theme_lgs() +
   annotate(geom = 'text',x = 1,y = 1,label = 'D')

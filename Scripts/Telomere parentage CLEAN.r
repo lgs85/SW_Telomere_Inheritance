@@ -3,10 +3,13 @@
 #################################################################################*
 
 
+#Only use Ellie's samples
+#dd0 <- subset(dd0,Whodunnit == 'EAF')
+
 #Average repeats of blood samples
-av <- ave(dd$TL,c(dd$BloodID,dd$Status))
-dd$TL <- av
-dd <- unique(dd)
+av <- ave(dd0$RTL,c(dd0$BloodID,dd0$Status,dd0$PlateID))
+dd0$RTL <- av
+dd <- dd0[!(duplicated(dd0$BloodID)),]
 
 
 # Weird variable names ----------------------------------------------------
@@ -43,19 +46,16 @@ dd$LeftTarsus <- NULL
 
 # Remove unwanted data/outliers ----------------------------------------------------
 
+dd <- subset(dd,RTL<2)
+dd <- subset(dd,RTL > 0.04)
 
-dd <- droplevels(subset(subset(dd,TL>1000),TL<15000))
 dd <- subset(dd,BodyMass>5)
 dd <- subset(dd,Tarsus>17)
 dd <- subset(dd,LayYear>1992)
 
 dd$Condition <- lm(BodyMass~Tarsus,data=dd)$resid
-dd <- subset(dd,Condition > -3)
-dd <- subset(dd,Condition < 3)
 
-# Telomere data -----------------------------------------------------------
 
-dd$TLKB <- dd$TL/1000
 
 # Age data ----------------------------------------------------------------
 
@@ -146,24 +146,22 @@ earlies <- subset(ddDate,Ageclass!='A')
 
 
 #Early life parental TL
-ParTL <- with(earlies,aggregate(TL,list(BirdID),mean))
-colnames(ParTL) <- c('BirdID','TL')
+ParTL <- with(earlies,aggregate(RTL,list(BirdID),mean))
+colnames(ParTL) <- c('BirdID','RTL')
 ddpar$EmumTL <- unlist(lapply(ddpar$mother,findTL))
 ddpar$EdadTL <- unlist(lapply(ddpar$father,findTL))
 
 #All parental TL
-ParTL <- with(ddDate,aggregate(TL,list(BirdID),mean))
-colnames(ParTL) <- c('BirdID','TL')
+ParTL <- with(ddDate,aggregate(RTL,list(BirdID),mean))
+colnames(ParTL) <- c('BirdID','RTL')
 ddpar$LmumTL <- unlist(lapply(ddpar$mother,findTL))
 ddpar$LdadTL <- unlist(lapply(ddpar$father,findTL))
-ddpar$LmumTLKB <- ddpar$LmumTL/1000
-ddpar$LdadTLKB <- ddpar$LdadTL/1000
-ddpar$parTL <- with(ddpar,(LmumTLKB+LdadTLKB)/2)
+ddpar$parTL <- with(ddpar,(LmumTL+LdadTL)/2)
 
 
 #Parental condition (ignore telomere names, kept this out of laziness)
 ParTL<- with(ddDate,aggregate(Condition,list(BirdID),mean))
-colnames(ParTL) <- c('BirdID','TL')
+colnames(ParTL) <- c('BirdID','RTL')
 ddpar$mumcon <- unlist(lapply(ddpar$mother,findTL))
 ddpar$dadcon <- unlist(lapply(ddpar$father,findTL))
 ddpar$parcon <- with(ddpar,(mumcon+dadcon)/2)
