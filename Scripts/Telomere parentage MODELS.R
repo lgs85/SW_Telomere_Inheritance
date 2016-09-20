@@ -32,7 +32,6 @@ FLTL_LdadTL <- lmer(RTL~LdadTL + (1|father) + (1|LayYear),data = FL,na.action=na
 FLTL_LmumTL <- lmer(RTL~LmumTL + TQ + (1|mother) + (1|LayYear),data = FL,na.action=na.exclude)
 FLTL_parTL <- lmer(RTL~parTL + Sex + Helper + TQ + (1|mother) + (1|LayYear),data = FL,na.action=na.exclude)
 
-summary(FLTL_LdadTL)
 
 # Telomere length and survival --------------------------------------------
 FLsurv <- glmer(SurvivedNext~RTL*Sex+(1|LayYear),data=FL,family = binomial,na.action=na.exclude)

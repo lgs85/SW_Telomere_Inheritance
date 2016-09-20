@@ -65,24 +65,16 @@ dev.off()
 ```
 
 ```{r Figure2}
+temp <- NL
 
-
-Fig2A <- ggplot(juv,aes(x = EdadTL,y = EmumTL)) +
+Fig2A <- ggplot(temp,aes(x = EdadTL,y = EmumTL)) +
   geom_point(alpha=0.2) +
   xlab('Paternal RTL (kb)') +
   ylab('Maternal RTL (kb)') +
   theme_lgs(addlegend = T)
   annotate(geom = 'text',x = 1,y = 12,label = 'A')
 
-t1 <- tapply(juv$RTL,juv$LayYear,mean)
-mymed <- median(t1)
-gys <- names(which(t1>mymed))
-bys <- names(which(t1<mymed))
 
-juv$gy <- ifelse(juv$LayYear %in% gys,'gy','by')
-  
-
-temp <- FL
 
 Fig2B <- ggplot(temp,aes(x = EmumTL,y = SexEstimate)) +
   geom_point(alpha=0.2) +
